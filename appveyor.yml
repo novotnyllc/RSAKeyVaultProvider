@@ -19,10 +19,17 @@ build_script:
   - cmd: dotnet test -c Release RSAKeyVaultProvider.Tests\RSAKeyVaultProvider.Tests.csproj
 
 after_build:
-  - ps: '.\SignClient\Sign-Package.ps1'
+  - ps: '.\scripts\Sign-Package.ps1'
   
 artifacts:
   - path: '*.nupkg'
   
 test: off
-  
+
+deploy:
+  provider: NuGet
+  server: https://www.myget.org/F/rsakeyvaultprovider/api/v2/package
+  symbol_server: https://www.myget.org/F/rsakeyvaultprovider/symbols/api/v2/package
+  api_key:
+    secure: bmqlJK8a5HYiUXOT99HXT1j7JiM5+fpR4kHhxIC30oaaEXbv94f0fKdiKlU1QC/l
+  artifact: /.*\.nupkg/
