@@ -11,6 +11,9 @@ namespace System.Security.Cryptography
 
         public RSAKeyVaultProvider(KeyVaultContext context)
         {
+            if (!context.IsValid)
+                throw new ArgumentException("Must not be the default", nameof(context));
+            
             this.context = context;
             rsa = context.Key.ToRSA();
             KeySizeValue = rsa.KeySize;

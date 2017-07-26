@@ -67,5 +67,10 @@ namespace System.Security.Cryptography
             var data = await client.DecryptAsync(KeyIdentifier.Identifier, algorithm, cipherText).ConfigureAwait(false);
             return data.Result;
         }
+        
+        /// <summary>
+        /// Returns true if properly constructed. If default, then false.
+        /// </summary>
+        public bool IsValid => client != null;
     }
 }
