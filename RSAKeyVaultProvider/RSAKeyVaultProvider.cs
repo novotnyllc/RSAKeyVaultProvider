@@ -55,8 +55,9 @@ namespace System.Security.Cryptography
         protected override byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm)
         {
             CheckDisposed();
-            
-            using (var digestAlgorithm = HashAlgorithm.Create(hashAlgorithm.Name))
+
+            // Need to call CryptoConfig since .NET Core 2 throws a PNSE
+            using (var digestAlgorithm = (HashAlgorithm)CryptoConfig.CreateFromName(hashAlgorithm.Name))
             {
                 return digestAlgorithm.ComputeHash(data, offset, count);
             }
@@ -65,8 +66,9 @@ namespace System.Security.Cryptography
         protected override byte[] HashData(Stream data, HashAlgorithmName hashAlgorithm)
         {
             CheckDisposed();
-            
-            using (var digestAlgorithm = HashAlgorithm.Create(hashAlgorithm.Name))
+
+            // Need to call CryptoConfig since .NET Core 2 throws a PNSE
+            using (var digestAlgorithm = (HashAlgorithm)CryptoConfig.CreateFromName(hashAlgorithm.Name))
             {
                 return digestAlgorithm.ComputeHash(data);
             }
