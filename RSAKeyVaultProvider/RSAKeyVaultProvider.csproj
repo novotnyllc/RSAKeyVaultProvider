@@ -11,6 +11,10 @@
     <PackageTags>RSA;Key Vault;.NET</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoPackageAnalysis>true</NoPackageAnalysis>
+    <DebugType>embedded</DebugType>
+    <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\RSAKeyVaultProvider.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
