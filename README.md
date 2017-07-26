@@ -28,13 +28,6 @@ with the following values:
 }
 ```
 
-There are a few tests that cover basic signing/verification of the provider itself. There
-is also a test for updating the signature of a manifest (`BasicTests.CanUpdateManifest`).
-
-To see this, note the `publisherIdentity` before, then after running the test, look at it in 
-the output directory. Mage runs at the end of the test to verify the signature.
-
-
 ## Azure Key Vault Explorer
 There's a handy GUI for accessing Key Vault and includes support for importing certificates:
 https://github.com/elize1979/AzureKeyVaultExplorer
