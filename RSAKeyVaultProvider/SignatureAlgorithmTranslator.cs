@@ -4,27 +4,18 @@ namespace System.Security.Cryptography
 {
     static class SignatureAlgorithmTranslator
     {
-        public static string SignatureAlgorithmToJwsAlgId(SigningAlgorithm signatureAlgorithm, HashAlgorithmName hashAlgorithmName)
+        public static string SignatureAlgorithmToJwsAlgId(HashAlgorithmName hashAlgorithmName)
         {
-            switch (signatureAlgorithm)
-            {
-                case SigningAlgorithm.RSA when hashAlgorithmName.Name == HashAlgorithmName.SHA256.Name:
-                    return "RS256";
-                case SigningAlgorithm.RSA when hashAlgorithmName.Name == HashAlgorithmName.SHA384.Name:
-                    return "RS384";
-                case SigningAlgorithm.RSA when hashAlgorithmName.Name == HashAlgorithmName.SHA512.Name:
-                    return "RS512";
+            if(hashAlgorithmName == HashAlgorithmName.SHA256)
+                return "RS256";
 
-                case SigningAlgorithm.ECDSA when hashAlgorithmName.Name == HashAlgorithmName.SHA256.Name:
-                    return "ES256";
-                case SigningAlgorithm.ECDSA when hashAlgorithmName.Name == HashAlgorithmName.SHA384.Name:
-                    return "ES384";
-                case SigningAlgorithm.ECDSA when hashAlgorithmName.Name == HashAlgorithmName.SHA512.Name:
-                    return "ES512";
-                default:
-                    throw new NotSupportedException("The algorithm specified is not supported.");
+            if (hashAlgorithmName == HashAlgorithmName.SHA384)
+                return "RS384";
 
-            }
+            if (hashAlgorithmName == HashAlgorithmName.SHA512)
+                return "RS512";
+            
+            throw new NotSupportedException("The algorithm specified is not supported.");
         }
     }
 }

@@ -16,23 +16,18 @@ namespace System.Security.Cryptography
         /// <summary>
         /// Creates a new Key Vault context.
         /// </summary>
-        public KeyVaultContext(KeyVaultClient client, KeyIdentifier keyIdentifier, JsonWebKey key, SigningAlgorithm signingAlgorithm)
+        public KeyVaultContext(KeyVaultClient client, KeyIdentifier keyIdentifier, JsonWebKey key)
         {
             this.client = client ?? throw new ArgumentNullException(nameof(client));
             KeyIdentifier = keyIdentifier ?? throw new ArgumentNullException(nameof(keyIdentifier));
             Key = key ?? throw new ArgumentNullException(nameof(key));
             Certificate = null;
-
-            if (signingAlgorithm != SigningAlgorithm.RSA)
-                throw new CryptographicException("Only RSA is supported");
-            
-            SignatureAlgorithm = signingAlgorithm;
         }
         
         /// <summary>
         /// Creates a new Key Vault context.
         /// </summary>
-        public KeyVaultContext(KeyVaultClient client, KeyIdentifier keyIdentifier, X509Certificate2 publiCertificate, SigningAlgorithm signingAlgorithm)
+        public KeyVaultContext(KeyVaultClient client, KeyIdentifier keyIdentifier, X509Certificate2 publiCertificate)
         {
             Certificate = publiCertificate ?? throw new ArgumentNullException(nameof(publiCertificate));
             this.client = client ?? throw new ArgumentNullException(nameof(client));
@@ -41,11 +36,6 @@ namespace System.Security.Cryptography
             {
                 Key = new JsonWebKey(rsa.ExportParameters(false));
             }
-
-            if (signingAlgorithm != SigningAlgorithm.RSA)
-                throw new CryptographicException("Only RSA is supported");
-
-            SignatureAlgorithm = signingAlgorithm;
         }
 
         /// <summary>
@@ -64,14 +54,9 @@ namespace System.Security.Cryptography
         /// </summary>
         public JsonWebKey Key { get; }
 
-        /// <summary>
-        /// Gets the signature algorithm. Currently, only <see cref="SigningAlgorithm.RSA"/> is supported.
-        /// </summary>
-        public SigningAlgorithm SignatureAlgorithm { get; }
-
         internal async Task<byte[]> SignDigestAsync(byte[] digest, HashAlgorithmName hashAlgorithm)
         {
-            var algorithm = SignatureAlgorithmTranslator.SignatureAlgorithmToJwsAlgId(SignatureAlgorithm, hashAlgorithm);
+            var algorithm = SignatureAlgorithmTranslator.SignatureAlgorithmToJwsAlgId(hashAlgorithm);
             var signature = await client.SignAsync(KeyIdentifier.Identifier, algorithm, digest).ConfigureAwait(false);
             return signature.Result;
         }

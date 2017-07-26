@@ -33,7 +33,7 @@ namespace Microsoft.Azure.KeyVault
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return new RSAKeyVaultProvider(new KeyVaultContext(client, keyIdentifier, key, SigningAlgorithm.RSA));
+            return new RSAKeyVaultProvider(new KeyVaultContext(client, keyIdentifier, key));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Microsoft.Azure.KeyVault
                 throw new ArgumentNullException(nameof(publicCertificate));
             }
 
-            return new RSAKeyVaultProvider(new KeyVaultContext(client, keyIdentifier, publicCertificate, SigningAlgorithm.RSA));
+            return new RSAKeyVaultProvider(new KeyVaultContext(client, keyIdentifier, publicCertificate));
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Microsoft.Azure.KeyVault
                 throw new ArgumentNullException(nameof(keyBundle));
             }
 
-            return new RSAKeyVaultProvider(new KeyVaultContext(client, keyBundle.KeyIdentifier, keyBundle.Key, SigningAlgorithm.RSA));
+            return new RSAKeyVaultProvider(new KeyVaultContext(client, keyBundle.KeyIdentifier, keyBundle.Key));
         }
     }
 }
