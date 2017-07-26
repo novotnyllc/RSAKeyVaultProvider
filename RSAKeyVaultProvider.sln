@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26711.1
+VisualStudioVersion = 15.0.26720.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RSAKeyVaultProvider", "RSAKeyVaultProvider\RSAKeyVaultProvider.csproj", "{4111CF9C-02B7-412C-887A-6E751D7936BF}"
 EndProject
@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9ECFD7DA-A446-4617-9E8F-B3440DA56E07}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		version.json = version.json
 	EndProjectSection
 EndProject
 Global

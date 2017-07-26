@@ -2,9 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Oren Novotny</Authors>
+    <Company>Oren Novotny</Company>
+    <Description>Enables Key Vault keys and certificates to be used anywhere RSA is within .NET's crypto ecosystem</Description>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/onovotny/RSAKeyVaultProvider/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/onovotny/RSAKeyVaultProvider</PackageProjectUrl>
+    <Copyright>Copyright (c) 2017 Oren Novotny</Copyright>
+    <PackageTags>RSA;Key Vault;.NET</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.0.37-beta" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Azure.KeyVault" Version="2.3.2" />
   </ItemGroup>
 
