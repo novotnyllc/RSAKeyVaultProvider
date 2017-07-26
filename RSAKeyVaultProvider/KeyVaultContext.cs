@@ -1,7 +1,7 @@
-﻿using Microsoft.Azure.KeyVault;
-using System;
+﻿using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.WebKey;
 
 namespace System.Security.Cryptography
