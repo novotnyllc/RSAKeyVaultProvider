@@ -2,7 +2,7 @@
 The `RSAKeyVaultProvider` enables you to use secrets and certificates stored in an 
 Azure Key Vault for performing signing and decryption operations. (Encrypt and verify
 can be done locally with the public key material.) The type implements `RSA` so can
-be used anywhere an `AsymmetricAlgorithm` can be, includign with `SignedXml` types.
+be used anywhere an `AsymmetricAlgorithm` can be, including with `SignedXml` types.
 
 ## Setup
 To run these tests, you'll need to import a code signing certificate into an
