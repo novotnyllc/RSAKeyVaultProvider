@@ -37,9 +37,8 @@ namespace RSAKeyVaultProviderTests
                 var contents = File.ReadAllText(credLocation);
                 Credentials = JsonConvert.DeserializeObject<TestAzureCredentials>(contents);
             }
-            catch (Exception e)
+            catch 
             {
-                Console.WriteLine(e);
             }
         }
 
