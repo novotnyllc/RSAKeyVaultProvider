@@ -15,7 +15,7 @@ install:
   - cmd: nuget install SignClient -Version 0.7.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
 
 build_script:
-  - cmd: dotnet pack -c Release -o %APPVEYOR_BUILD_FOLDER%
+  - cmd: dotnet pack -c Release /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
   - cmd: dotnet test -c Release RSAKeyVaultProvider.Tests\RSAKeyVaultProvider.Tests.csproj
 
 after_build:
