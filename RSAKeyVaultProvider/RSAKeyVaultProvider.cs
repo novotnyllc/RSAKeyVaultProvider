@@ -17,7 +17,7 @@ namespace System.Security.Cryptography
             LegalKeySizesValue = rsa.LegalKeySizes;
         }
         
-        new static public RSAKeyVaultProvider Create() => Create("RSAKeyVaultProvider.RSAKeyVaultProvider");
+        new static public RSAKeyVaultProvider Create() => Create("System.Security.Cryptography.RSAKeyVaultProvider");
 
         new static public RSAKeyVaultProvider Create(string algName) => (RSAKeyVaultProvider)CryptoConfig.CreateFromName(algName);
         
