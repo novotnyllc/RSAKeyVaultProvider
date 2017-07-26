@@ -1,4 +1,4 @@
-﻿using Crypto = System.Security.Cryptography;
+﻿using System;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
@@ -156,6 +156,12 @@ namespace RSAKeyVaultProviderTests
                     Assert.True(result);
                 }
             }
+        }
+
+        [Fact]
+        public void DefaultContextShouldThrow()
+        {
+            Assert.Throws<ArgumentException>(() => new RSAKeyVaultProvider(default(KeyVaultContext)));
         }
     }
 }
