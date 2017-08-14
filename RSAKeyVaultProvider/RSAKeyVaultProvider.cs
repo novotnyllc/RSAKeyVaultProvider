@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
-namespace System.Security.Cryptography
+namespace Microsoft.Azure.KeyVault
 {
     public sealed class RSAKeyVaultProvider : RSA
     {

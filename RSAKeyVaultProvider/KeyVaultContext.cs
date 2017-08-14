@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.WebKey;
 
-namespace System.Security.Cryptography
+namespace Microsoft.Azure.KeyVault
 {
     /// <summary>
     /// A signing context used for signing packages with Azure Key Vault Keys.
