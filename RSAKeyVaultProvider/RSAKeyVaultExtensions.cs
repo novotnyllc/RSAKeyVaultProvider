@@ -7,7 +7,7 @@ using Microsoft.Azure.KeyVault.Models;
 // Namespace here so these show up in the main namespace
 namespace Microsoft.Azure.KeyVault
 {
-    public static class RSAKeyVaultProviderExtensions
+    public static class RSAKeyVaultExtensions
     {
         /// <summary>
         /// Creates an RSA object
@@ -33,7 +33,7 @@ namespace Microsoft.Azure.KeyVault
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return new RSAKeyVaultProvider(new KeyVaultContext(client, keyIdentifier, key));
+            return new RSAKeyVault(new KeyVaultContext(client, keyIdentifier, key));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Microsoft.Azure.KeyVault
                 throw new ArgumentNullException(nameof(publicCertificate));
             }
 
-            return new RSAKeyVaultProvider(new KeyVaultContext(client, keyIdentifier, publicCertificate));
+            return new RSAKeyVault(new KeyVaultContext(client, keyIdentifier, publicCertificate));
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Microsoft.Azure.KeyVault
                 throw new ArgumentNullException(nameof(keyBundle));
             }
 
-            return new RSAKeyVaultProvider(new KeyVaultContext(client, keyBundle.KeyIdentifier, keyBundle.Key));
+            return new RSAKeyVault(new KeyVaultContext(client, keyBundle.KeyIdentifier, keyBundle.Key));
         }
     }
 }

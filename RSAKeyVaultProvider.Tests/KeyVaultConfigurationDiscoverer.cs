@@ -83,11 +83,11 @@ namespace RSAKeyVaultProviderTests
             Client.Dispose();
         }
 
-        public RSAKeyVaultProvider ToRSA()
+        public RSAKeyVault ToRSA()
         {
             if (PublicCertificate != null)
-                return (RSAKeyVaultProvider)Client.ToRSA(KeyIdentifier, PublicCertificate);
-            return (RSAKeyVaultProvider)Client.ToRSA(KeyIdentifier, Key);
+                return (RSAKeyVault)Client.ToRSA(KeyIdentifier, PublicCertificate);
+            return (RSAKeyVault)Client.ToRSA(KeyIdentifier, Key);
         }
     }
 }

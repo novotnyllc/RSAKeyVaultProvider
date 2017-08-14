@@ -162,7 +162,7 @@ namespace RSAKeyVaultProviderTests
         [Fact]
         public void DefaultContextShouldThrow()
         {
-            Assert.Throws<ArgumentException>(() => new RSAKeyVaultProvider(default(KeyVaultContext)));
+            Assert.Throws<ArgumentException>(() => new RSAKeyVault(default(KeyVaultContext)));
         }
     }
 }
