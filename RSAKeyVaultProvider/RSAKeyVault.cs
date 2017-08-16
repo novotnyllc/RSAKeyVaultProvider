@@ -14,7 +14,7 @@ namespace Microsoft.Azure.KeyVault
         {
             if (!context.IsValid)
                 throw new ArgumentException("Must not be the default", nameof(context));
-            
+
             this.context = context;
             publicKey = context.Key.ToRSA();
             KeySizeValue = publicKey.KeySize;
@@ -27,12 +27,12 @@ namespace Microsoft.Azure.KeyVault
             
             // Key Vault only supports PKCSv1 padding
             if (padding.Mode != RSASignaturePaddingMode.Pkcs1)
-                throw new CryptographicException(("Unsupported padding mode"));
+                throw new CryptographicException("Unsupported padding mode");
 
             try
             {
                 // Put this on a task.run since we must make this sync
-                return Task.Run(() => context.SignDigestAsync(hash, hashAlgorithm)).Result;
+                return Task.Run(() => context.SignDigestAsync(hash, hashAlgorithm)).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -77,7 +77,7 @@ namespace Microsoft.Azure.KeyVault
             try
             {
                 // Put this on a task.run since we must make this sync
-                return Task.Run(() => context.DecryptDataAsync(data, padding)).Result;
+                return Task.Run(() => context.DecryptDataAsync(data, padding)).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -95,9 +95,9 @@ namespace Microsoft.Azure.KeyVault
         public override RSAParameters ExportParameters(bool includePrivateParameters)
         {
             CheckDisposed();
-            
+
             if (includePrivateParameters)
-                throw new CryptographicException(("Private keys cannot be exported by this provider"));
+                throw new CryptographicException("Private keys cannot be exported by this provider");
 
             return context.Key.ToRSAParameters();
         }
@@ -120,7 +120,7 @@ namespace Microsoft.Azure.KeyVault
                 publicKey?.Dispose();
                 publicKey = null;
             }
-            
+
             base.Dispose(disposing);
         }
 
