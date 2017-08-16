@@ -159,6 +159,37 @@ namespace RSAKeyVaultProviderTests
             }
         }
 
+        [AzureFact]
+        public async Task SignDataShouldThrowForUnsupportedHashAlgorithm()
+        {
+            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration))
+            {
+                using (var rsa = materialized.ToRSA())
+                {
+                    var exception = Assert.Throws<NotSupportedException>(() =>
+                        rsa.SignData(Array.Empty<byte>(), new HashAlgorithmName("unsupported"), RSASignaturePadding.Pkcs1));
+
+                    Assert.Equal("The specified algorithm is not supported.", exception.Message);
+                }
+            }
+        }
+
+        [AzureFact]
+        public async Task VerifyDataShouldThrowForUnsupportedHashAlgorithm()
+        {
+            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration))
+            {
+                using (var rsa = materialized.ToRSA())
+                {
+                    var exception = Assert.Throws<NotSupportedException>(() =>
+                        rsa.VerifyData(Array.Empty<byte>(), Array.Empty<byte>(),
+                            new HashAlgorithmName("unsupported"), RSASignaturePadding.Pkcs1));
+
+                    Assert.Equal("The specified algorithm is not supported.", exception.Message);
+                }
+            }
+        }
+
         [Fact]
         public void DefaultContextShouldThrow()
         {

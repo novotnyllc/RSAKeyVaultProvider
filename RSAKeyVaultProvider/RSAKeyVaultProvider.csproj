@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard1.4;netstandard2.0</TargetFrameworks>
     <Authors>Oren Novotny</Authors>
     <Company>Oren Novotny</Company>
     <Description>Enables Key Vault keys and certificates to be used anywhere RSA is within .NET's crypto ecosystem</Description>
