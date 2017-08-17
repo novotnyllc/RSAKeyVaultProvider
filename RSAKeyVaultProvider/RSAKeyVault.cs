@@ -52,8 +52,7 @@ namespace Microsoft.Azure.KeyVault
         {
             CheckDisposed();
 
-            // Need to call CryptoConfig since .NET Core 2 throws a PNSE with HashAlgorithm.Create
-            using (var digestAlgorithm = (HashAlgorithm)CryptoConfig.CreateFromName(hashAlgorithm.Name))
+            using (var digestAlgorithm = GetHashAlgorithm(hashAlgorithm))
             {
                 return digestAlgorithm.ComputeHash(data, offset, count);
             }
@@ -63,8 +62,7 @@ namespace Microsoft.Azure.KeyVault
         {
             CheckDisposed();
 
-            // Need to call CryptoConfig since .NET Core 2 throws a PNSE with HashAlgorithm.Create
-            using (var digestAlgorithm = (HashAlgorithm)CryptoConfig.CreateFromName(hashAlgorithm.Name))
+            using (var digestAlgorithm = GetHashAlgorithm(hashAlgorithm))
             {
                 return digestAlgorithm.ComputeHash(data);
             }
@@ -124,15 +122,18 @@ namespace Microsoft.Azure.KeyVault
             base.Dispose(disposing);
         }
 
-        // Obsolete, not used
-        public override byte[] DecryptValue(byte[] rgb)
+        private static HashAlgorithm GetHashAlgorithm(HashAlgorithmName algorithm)
         {
-            throw new NotSupportedException();
-        }
+            if (algorithm == HashAlgorithmName.SHA256)
+                return SHA256.Create();
 
-        public override byte[] EncryptValue(byte[] rgb)
-        {
-            throw new NotSupportedException();
+            if (algorithm == HashAlgorithmName.SHA384)
+                return SHA384.Create();
+
+            if (algorithm == HashAlgorithmName.SHA512)
+                return SHA512.Create();
+
+            throw new NotSupportedException("The specified algorithm is not supported.");
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.IO;
+﻿using System.IO;
+using System.Reflection;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace RSAKeyVaultProviderTests
@@ -32,7 +32,7 @@ namespace RSAKeyVaultProviderTests
         {
             try
             {
-                var basePath = Path.GetDirectoryName(typeof(TestAzureCredentials).Assembly.Location);
+                var basePath = Path.GetDirectoryName(typeof(TestAzureCredentials).GetTypeInfo().Assembly.Location);
                 var credLocation = Path.Combine(basePath, @"private\azure-creds.json");
                 var contents = File.ReadAllText(credLocation);
                 Credentials = JsonConvert.DeserializeObject<TestAzureCredentials>(contents);
