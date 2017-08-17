@@ -122,43 +122,18 @@ namespace Microsoft.Azure.KeyVault
             base.Dispose(disposing);
         }
 
-#if NETSTANDARD20
-        // Obsolete, not used
-        public override byte[] DecryptValue(byte[] rgb)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override byte[] EncryptValue(byte[] rgb)
-        {
-            throw new NotSupportedException();
-        }
-#endif
-
         private static HashAlgorithm GetHashAlgorithm(HashAlgorithmName algorithm)
         {
-#if NETSTANDARD20
-            // Need to call CryptoConfig since .NET Core 2 throws a PNSE with HashAlgorithm.Create
-            return CryptoConfig.CreateFromName(algorithm.Name) as HashAlgorithm
-                ?? throw new NotSupportedException("The specified algorithm is not supported.");
-#else
             if (algorithm == HashAlgorithmName.SHA256)
-            {
                 return SHA256.Create();
-            }
 
             if (algorithm == HashAlgorithmName.SHA384)
-            {
                 return SHA384.Create();
-            }
 
             if (algorithm == HashAlgorithmName.SHA512)
-            {
                 return SHA512.Create();
-            }
 
             throw new NotSupportedException("The specified algorithm is not supported.");
-#endif
         }
     }
 }
