@@ -142,11 +142,6 @@ namespace Microsoft.Azure.KeyVault
             return CryptoConfig.CreateFromName(algorithm.Name) as HashAlgorithm
                 ?? throw new NotSupportedException("The specified algorithm is not supported.");
 #else
-            if (algorithm == HashAlgorithmName.SHA1)
-            {
-                return SHA1.Create();
-            }
-
             if (algorithm == HashAlgorithmName.SHA256)
             {
                 return SHA256.Create();
