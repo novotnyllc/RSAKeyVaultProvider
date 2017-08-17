@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net461;netcoreapp1.0;netcoreapp2.0</TargetFrameworks>
+    <RuntimeIdentifier Condition="'$(TargetFramework)' == 'net461'">win</RuntimeIdentifier>
 
     <IsPackable>false</IsPackable>
     <RootNamespace>RSAKeyVaultProviderTests</RootNamespace>
