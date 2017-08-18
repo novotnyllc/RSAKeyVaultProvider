@@ -28,12 +28,12 @@ namespace Microsoft.Azure.KeyVault
         /// <summary>
         /// Creates a new Key Vault context.
         /// </summary>
-        public KeyVaultContext(KeyVaultClient client, KeyIdentifier keyIdentifier, X509Certificate2 publiCertificate)
+        public KeyVaultContext(KeyVaultClient client, KeyIdentifier keyIdentifier, X509Certificate2 publicCertificate)
         {
-            Certificate = publiCertificate ?? throw new ArgumentNullException(nameof(publiCertificate));
+            Certificate = publicCertificate ?? throw new ArgumentNullException(nameof(publicCertificate));
             this.client = client ?? throw new ArgumentNullException(nameof(client));
             KeyIdentifier = keyIdentifier ?? throw new ArgumentNullException(nameof(keyIdentifier));
-            using (var rsa = publiCertificate.GetRSAPublicKey())
+            using (var rsa = publicCertificate.GetRSAPublicKey())
             {
                 Key = new JsonWebKey(rsa.ExportParameters(false));
             }
