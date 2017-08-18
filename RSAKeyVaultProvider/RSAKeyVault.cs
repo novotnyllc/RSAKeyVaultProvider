@@ -24,7 +24,7 @@ namespace Microsoft.Azure.KeyVault
         public override byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
         {
             // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
-            return SignHashAsync(hash, hashAlgorithm, padding).GetAwaiter().GetResult();
+            return SignHashAsync(hash, hashAlgorithm, padding).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         public async Task<byte[]> SignHashAsync(byte[] hash, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
@@ -76,7 +76,7 @@ namespace Microsoft.Azure.KeyVault
         public override byte[] Decrypt(byte[] data, RSAEncryptionPadding padding)
         {
                 // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
-            return DecryptAsync(data, padding).GetAwaiter().GetResult();
+            return DecryptAsync(data, padding).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         public async Task<byte[]> DecryptAsync(byte[] data, RSAEncryptionPadding padding)
