@@ -31,8 +31,8 @@ namespace Microsoft.Azure.KeyVault
 
             try
             {
-                // Put this on a task.run since we must make this sync
-                return Task.Run(() => context.SignDigestAsync(hash, hashAlgorithm)).GetAwaiter().GetResult();
+                // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
+                return context.SignDigestAsync(hash, hashAlgorithm).ConfigureAwait(false).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
@@ -74,8 +74,8 @@ namespace Microsoft.Azure.KeyVault
 
             try
             {
-                // Put this on a task.run since we must make this sync
-                return Task.Run(() => context.DecryptDataAsync(data, padding)).GetAwaiter().GetResult();
+                // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
+                return context.DecryptDataAsync(data, padding).ConfigureAwait(false).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
