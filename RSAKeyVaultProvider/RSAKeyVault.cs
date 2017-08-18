@@ -38,7 +38,7 @@ namespace Microsoft.Azure.KeyVault
 
             try
             {
-                return await context.SignDigestAsync(hash, hashAlgorithm);
+                return await context.SignDigestAsync(hash, hashAlgorithm).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -87,7 +87,7 @@ namespace Microsoft.Azure.KeyVault
 
             try
             {
-                return await context.DecryptDataAsync(data, padding);
+                return await context.DecryptDataAsync(data, padding).ConfigureAwait(false);
             }
             catch (Exception e)
             {
