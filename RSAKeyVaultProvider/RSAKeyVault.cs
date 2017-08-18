@@ -23,16 +23,21 @@ namespace Microsoft.Azure.KeyVault
 
         public override byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
         {
+            // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
+            return SignHashAsync(hash, hashAlgorithm, padding).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        public async Task<byte[]> SignHashAsync(byte[] hash, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
+        {
             CheckDisposed();
-            
+
             // Key Vault only supports PKCSv1 padding
             if (padding.Mode != RSASignaturePaddingMode.Pkcs1)
                 throw new CryptographicException("Unsupported padding mode");
 
             try
             {
-                // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
-                return context.SignDigestAsync(hash, hashAlgorithm).ConfigureAwait(false).GetAwaiter().GetResult();
+                return await context.SignDigestAsync(hash, hashAlgorithm);
             }
             catch (Exception e)
             {
@@ -67,15 +72,20 @@ namespace Microsoft.Azure.KeyVault
                 return digestAlgorithm.ComputeHash(data);
             }
         }
-        
+
         public override byte[] Decrypt(byte[] data, RSAEncryptionPadding padding)
+        {
+                // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
+            return DecryptAsync(data, padding).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        public async Task<byte[]> DecryptAsync(byte[] data, RSAEncryptionPadding padding)
         {
             CheckDisposed();
 
             try
             {
-                // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
-                return context.DecryptDataAsync(data, padding).ConfigureAwait(false).GetAwaiter().GetResult();
+                return await context.DecryptDataAsync(data, padding);
             }
             catch (Exception e)
             {
