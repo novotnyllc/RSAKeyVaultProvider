@@ -10,14 +10,14 @@ if([string]::IsNullOrEmpty($env:SignClientSecret)){
 
 $appSettings = "$currentDirectory\SignClient.json"
 
-$appPath = "$currentDirectory\..\packages\SignClient\tools\SignClient.dll"
+$appPath = "$currentDirectory\..\packages\SignClient\tools\netcoreapp2.0\SignClient.dll"
 
 $nupgks = ls $currentDirectory\..\*.nupkg | Select -ExpandProperty FullName
 
 foreach ($nupkg in $nupgks){
 	Write-Host "Submitting $nupkg for signing"
 
-	dotnet $appPath 'sign' -c $appSettings -i $nupkg -s $env:SignClientSecret -n 'RSAKeyVaultProvider' -d 'RSAKeyVaultProvider' -u 'https://github.com/onovotny/RSAKeyVaultProvider' 
+	dotnet $appPath 'sign' -c $appSettings -i $nupkg -r $env:SignClientUser -s $env:SignClientSecret -n 'RSAKeyVaultProvider' -d 'RSAKeyVaultProvider' -u 'https://github.com/onovotny/RSAKeyVaultProvider' 
 
 	Write-Host "Finished signing $nupkg"
 }
