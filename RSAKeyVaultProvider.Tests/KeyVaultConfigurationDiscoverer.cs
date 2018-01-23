@@ -21,17 +21,17 @@ namespace RSAKeyVaultProviderTests
                 }
 
                 var context = new AuthenticationContext(authority);
-                ClientCredential credential = new ClientCredential(configuration.AzureClientId, configuration.AzureClientSecret);
+                var credential = new ClientCredential(configuration.AzureClientId, configuration.AzureClientSecret);
 
-                AuthenticationResult result = await context.AcquireTokenAsync(resource, credential).ConfigureAwait(false);
+                var result = await context.AcquireTokenAsync(resource, credential).ConfigureAwait(false);
                 if (result == null)
                 {
                     throw new InvalidOperationException("Authentication to Azure failed.");
                 }
                 return result.AccessToken;
             }
-            var client = new HttpClient();
-            var vault = new KeyVaultClient(Authenticate, client);
+
+            var vault = new KeyVaultClient(Authenticate);
             if (configuration.Mode == KeyVaultMode.Certificate)
             {
                 var azureCertificate = await vault.GetCertificateAsync(configuration.AzureKeyVaultUrl, configuration.AzureKeyVaultKeyName).ConfigureAwait(false);

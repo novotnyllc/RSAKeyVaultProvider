@@ -17,7 +17,7 @@ skip_commits:
     - '**/*.md'
 
 install:
-  - cmd: nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
+  - cmd: nuget install SignClient -Version 0.9.1 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
 
 build_script:
   - cmd: dotnet build -c Release /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%

@@ -46,8 +46,8 @@ namespace RSAKeyVaultProviderTests
                 using (var rsa = materialized.ToRSA())
                 using (var sha256 = SHA256.Create())
                 {
-                    byte[] data = new byte[] { 1, 2, 3 };
-                    byte[] digest = sha256.ComputeHash(data);
+                    var data = new byte[] { 1, 2, 3 };
+                    var digest = sha256.ComputeHash(data);
                     var signature = rsa.SignHash(digest, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     var result = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     Assert.True(result);
@@ -63,8 +63,8 @@ namespace RSAKeyVaultProviderTests
                 using (var rsa = materialized.ToRSA())
                 using (var sha256 = SHA256.Create())
                 {
-                    byte[] data = new byte[] { 1, 2, 3 };
-                    byte[] digest = sha256.ComputeHash(data);
+                    var data = new byte[] { 1, 2, 3 };
+                    var digest = sha256.ComputeHash(data);
                     var signature = rsa.SignHash(digest, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     signature[0] = (byte)~signature[0]; //Flip some bits.
                     var result = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -81,7 +81,7 @@ namespace RSAKeyVaultProviderTests
             {
                 using (var rsa = materialized.ToRSA())
                 {
-                    byte[] data = new byte[] { 1, 2, 3 };
+                    var data = new byte[] { 1, 2, 3 };
                 
                     var signature = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     var result = rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -97,7 +97,7 @@ namespace RSAKeyVaultProviderTests
             {
                 using (var rsa = materialized.ToRSA())
                 {
-                    byte[] data = Encoding.UTF8.GetBytes("Clear text");
+                    var data = Encoding.UTF8.GetBytes("Clear text");
                     var cipherText = rsa.Encrypt(data, RSAEncryptionPadding.Pkcs1);
                     var returnedData = rsa.Decrypt(cipherText, RSAEncryptionPadding.Pkcs1);
                     var text = Encoding.UTF8.GetString(returnedData);
@@ -115,8 +115,8 @@ namespace RSAKeyVaultProviderTests
                 using (var rsa = materialized.ToRSA())
                 using (var sha256 = SHA256.Create())
                 {
-                    byte[] data = new byte[] { 1, 2, 3 };
-                    byte[] digest = sha256.ComputeHash(data);
+                    var data = new byte[] { 1, 2, 3 };
+                    var digest = sha256.ComputeHash(data);
                     var signature = rsa.SignHash(digest, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     var result = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     Assert.True(result);
@@ -132,8 +132,8 @@ namespace RSAKeyVaultProviderTests
                 using (var rsa = materialized.ToRSA())
                 using (var sha256 = SHA256.Create())
                 {
-                    byte[] data = new byte[] { 1, 2, 3 };
-                    byte[] digest = sha256.ComputeHash(data);
+                    var data = new byte[] { 1, 2, 3 };
+                    var digest = sha256.ComputeHash(data);
                     var signature = rsa.SignHash(digest, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     signature[0] = (byte)~signature[0]; //Flip some bits.
                     var result = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -150,7 +150,7 @@ namespace RSAKeyVaultProviderTests
             {
                 using (var rsa = materialized.ToRSA())
                 {
-                    byte[] data = new byte[] {1, 2, 3};
+                    var data = new byte[] {1, 2, 3};
 
                     var signature = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     var result = rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
