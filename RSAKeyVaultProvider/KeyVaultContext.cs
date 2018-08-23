@@ -58,6 +58,10 @@ namespace Microsoft.Azure.KeyVault
         internal async Task<byte[]> SignDigestAsync(byte[] digest, HashAlgorithmName hashAlgorithm)
         {
             var algorithm = SignatureAlgorithmTranslator.SignatureAlgorithmToJwsAlgId(hashAlgorithm);
+
+            if (hashAlgorithm == HashAlgorithmName.SHA1)
+                digest = CreateSHA1Digest(digest);
+
             var signature = await client.SignAsync(KeyIdentifier.Identifier, algorithm, digest).ConfigureAwait(false);
             return signature.Result;
         }
@@ -68,7 +72,26 @@ namespace Microsoft.Azure.KeyVault
             var data = await client.DecryptAsync(KeyIdentifier.Identifier, algorithm, cipherText).ConfigureAwait(false);
             return data.Result;
         }
-        
+
+        private static byte[] CreateSHA1Digest(byte[] digest)
+        {
+            var hashAlgorithm = SHA1.Create();
+            byte[] hash = hashAlgorithm.ComputeHash(digest);
+
+            if (hash == null || hash.Length == 0)
+                throw new ArgumentNullException(nameof(hash));
+
+            byte[] newPkcs1Digest = null;
+
+            if (hash.Length != 20)
+                throw new ArgumentException("Invalid hash value");
+
+            newPkcs1Digest = new byte[] { 0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2B, 0x0E, 0x03, 0x02, 0x1A, 0x05, 0x00, 0x04, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+            Array.Copy(hash, 0, newPkcs1Digest, newPkcs1Digest.Length - hash.Length, hash.Length);
+
+            return newPkcs1Digest;
+        }
+
         /// <summary>
         /// Returns true if properly constructed. If default, then false.
         /// </summary>
