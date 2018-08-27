@@ -59,7 +59,7 @@ namespace Microsoft.Azure.KeyVault
             var algorithm = SignatureAlgorithmTranslator.SignatureAlgorithmToJwsAlgId(hashAlgorithm);
 
             if (hashAlgorithm == HashAlgorithmName.SHA1)
-                digest = Sha1Helper.CreateDigest(hashAlgorithm, digest);
+                digest = Sha1Helper.CreateDigest(digest);
 
             var signature = await client.SignAsync(KeyIdentifier.Identifier, algorithm, digest).ConfigureAwait(false);
             return signature.Result;
