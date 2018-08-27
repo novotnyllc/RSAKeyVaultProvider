@@ -1,0 +1,22 @@
+﻿using System;
+using System.Security.Cryptography;
+
+namespace Microsoft.Azure.KeyVault
+{
+    static class Sha1Helper
+    {
+        const int SHA1_SIZE = 20;
+        readonly static byte[] sha1Digest = new byte[] { 0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2B, 0x0E, 0x03, 0x02, 0x1A, 0x05, 0x00, 0x04, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+        public static byte[] CreateDigest(HashAlgorithmName algorithm, byte[] hash)
+        {
+            if (hash.Length != SHA1_SIZE)
+                throw new ArgumentException("Invalid hash value");
+
+            byte[] pkcs1Digest = sha1Digest;
+            Array.Copy(hash, 0, pkcs1Digest, pkcs1Digest.Length - hash.Length, hash.Length);
+
+            return pkcs1Digest;
+        }
+    }
+}

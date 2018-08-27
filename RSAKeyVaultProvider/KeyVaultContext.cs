@@ -59,7 +59,7 @@ namespace Microsoft.Azure.KeyVault
             var algorithm = SignatureAlgorithmTranslator.SignatureAlgorithmToJwsAlgId(hashAlgorithm);
 
             if (hashAlgorithm == HashAlgorithmName.SHA1)
-                digest = CreateDigest(hashAlgorithm, digest);
+                digest = Sha1Helper.CreateDigest(hashAlgorithm, digest);
 
             var signature = await client.SignAsync(KeyIdentifier.Identifier, algorithm, digest).ConfigureAwait(false);
             return signature.Result;
@@ -70,17 +70,6 @@ namespace Microsoft.Azure.KeyVault
             var algorithm = EncryptionPaddingTranslator.EncryptionPaddingToJwsAlgId(padding);
             var data = await client.DecryptAsync(KeyIdentifier.Identifier, algorithm, cipherText).ConfigureAwait(false);
             return data.Result;
-        }
-
-        private static byte[] CreateDigest(HashAlgorithmName algorithm, byte[] hash)
-        {
-            if (hash.Length != algorithm.DigestSize())
-                throw new ArgumentException("Invalid hash value");
-
-            byte[] pkcs1Digest = algorithm.DigestValue();
-            Array.Copy(hash, 0, pkcs1Digest, pkcs1Digest.Length - hash.Length, hash.Length);
-
-            return pkcs1Digest;
         }
 
         /// <summary>
