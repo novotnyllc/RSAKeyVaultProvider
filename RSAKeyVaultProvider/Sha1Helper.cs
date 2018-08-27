@@ -13,7 +13,7 @@ namespace Microsoft.Azure.KeyVault
             if (hash.Length != SHA1_SIZE)
                 throw new ArgumentException("Invalid hash value");
 
-            byte[] pkcs1Digest = sha1Digest;
+            byte[] pkcs1Digest = (byte[])sha1Digest.Clone();
             Array.Copy(hash, 0, pkcs1Digest, pkcs1Digest.Length - hash.Length, hash.Length);
 
             return pkcs1Digest;
