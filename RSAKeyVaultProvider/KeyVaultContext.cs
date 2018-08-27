@@ -2,7 +2,6 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.WebKey;
 
 namespace Microsoft.Azure.KeyVault
@@ -10,7 +9,7 @@ namespace Microsoft.Azure.KeyVault
     /// <summary>
     /// A signing context used for signing packages with Azure Key Vault Keys.
     /// </summary>
-    public struct KeyVaultContext    
+    public struct KeyVaultContext
     {
         readonly KeyVaultClient client;
 
@@ -24,7 +23,7 @@ namespace Microsoft.Azure.KeyVault
             Key = key ?? throw new ArgumentNullException(nameof(key));
             Certificate = null;
         }
-        
+
         /// <summary>
         /// Creates a new Key Vault context.
         /// </summary>
@@ -44,7 +43,7 @@ namespace Microsoft.Azure.KeyVault
         /// Key isn't part of a certificate
         /// </summary>
         public X509Certificate2 Certificate { get; }
-        
+
         /// <summary>
         /// Identifyer of current key
         /// </summary>
@@ -60,7 +59,7 @@ namespace Microsoft.Azure.KeyVault
             var algorithm = SignatureAlgorithmTranslator.SignatureAlgorithmToJwsAlgId(hashAlgorithm);
 
             if (hashAlgorithm == HashAlgorithmName.SHA1)
-                digest = CreateSHA1Digest(digest);
+                digest = CreateDigest(hashAlgorithm, digest);
 
             var signature = await client.SignAsync(KeyIdentifier.Identifier, algorithm, digest).ConfigureAwait(false);
             return signature.Result;
@@ -73,23 +72,15 @@ namespace Microsoft.Azure.KeyVault
             return data.Result;
         }
 
-        private static byte[] CreateSHA1Digest(byte[] digest)
+        private static byte[] CreateDigest(HashAlgorithmName algorithm, byte[] hash)
         {
-            var hashAlgorithm = SHA1.Create();
-            byte[] hash = hashAlgorithm.ComputeHash(digest);
-
-            if (hash == null || hash.Length == 0)
-                throw new ArgumentNullException(nameof(hash));
-
-            byte[] newPkcs1Digest = null;
-
-            if (hash.Length != 20)
+            if (hash.Length != algorithm.DigestSize())
                 throw new ArgumentException("Invalid hash value");
 
-            newPkcs1Digest = new byte[] { 0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2B, 0x0E, 0x03, 0x02, 0x1A, 0x05, 0x00, 0x04, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            Array.Copy(hash, 0, newPkcs1Digest, newPkcs1Digest.Length - hash.Length, hash.Length);
+            byte[] pkcs1Digest = algorithm.DigestValue();
+            Array.Copy(hash, 0, pkcs1Digest, pkcs1Digest.Length - hash.Length, hash.Length);
 
-            return newPkcs1Digest;
+            return pkcs1Digest;
         }
 
         /// <summary>

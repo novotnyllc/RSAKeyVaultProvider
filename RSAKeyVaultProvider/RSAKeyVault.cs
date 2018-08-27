@@ -58,17 +58,17 @@ namespace Microsoft.Azure.KeyVault
         {
             CheckDisposed();
 
-            using (var digestAlgorithm = GetHashAlgorithm(hashAlgorithm))
+            using (var digestAlgorithm = hashAlgorithm.Create())
             {
                 return digestAlgorithm.ComputeHash(data, offset, count);
             }
-        }   
+        }
 
         protected override byte[] HashData(Stream data, HashAlgorithmName hashAlgorithm)
         {
             CheckDisposed();
 
-            using (var digestAlgorithm = GetHashAlgorithm(hashAlgorithm))
+            using (var digestAlgorithm = hashAlgorithm.Create())
             {
                 return digestAlgorithm.ComputeHash(data);
             }
@@ -132,20 +132,6 @@ namespace Microsoft.Azure.KeyVault
             }
 
             base.Dispose(disposing);
-        }
-
-        private static HashAlgorithm GetHashAlgorithm(HashAlgorithmName algorithm)
-        {
-            if (algorithm == HashAlgorithmName.SHA256)
-                return SHA256.Create();
-
-            if (algorithm == HashAlgorithmName.SHA384)
-                return SHA384.Create();
-
-            if (algorithm == HashAlgorithmName.SHA512)
-                return SHA512.Create();
-
-            throw new NotSupportedException("The specified algorithm is not supported.");
         }
     }
 }
