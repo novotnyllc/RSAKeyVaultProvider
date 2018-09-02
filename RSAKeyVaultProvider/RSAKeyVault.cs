@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Azure.KeyVault
 {
+    /// <summary>
+    /// RSA implementation that uses Azure Key Vault
+    /// </summary>
     public sealed class RSAKeyVault : RSA
     {
         readonly KeyVaultContext context;
