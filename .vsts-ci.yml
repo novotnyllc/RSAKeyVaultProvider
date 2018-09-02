@@ -13,7 +13,7 @@ steps:
       displayName: Authenticode Sign artifacts
       inputs:
         filePath: scripts/Sign-Package.ps1
-      env:
+      env:      
+        ArtifactDirectory: $(Build.ArtifactStagingDirectory)\Packages
         SignClientUser: $(SignClientUser)
         SignClientSecret: $(SignClientSecret)
-        ArtifactDirectory: $(Build.ArtifactStagingDirectory)\Packages

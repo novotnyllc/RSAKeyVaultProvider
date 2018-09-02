@@ -11,6 +11,8 @@ dotnet tool install --tool-path . SignClient
 # Setup Variables we need to pass into the sign client tool
 $appSettings = "$currentDirectory\SignClient.json"
 
+Write-Host "Listing *.nupkg in $Env:ArtifactDirectory"
+
 $nupkgs = gci $Env:ArtifactDirectory\*.nupkg -recurse | Select -ExpandProperty FullName
 
 foreach ($nupkg in $nupgks){
