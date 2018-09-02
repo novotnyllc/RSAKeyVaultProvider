@@ -9,7 +9,6 @@
     <PackageProjectUrl>https://github.com/onovotny/RSAKeyVaultProvider</PackageProjectUrl>
     <Copyright>Copyright (c) 2018 Oren Novotny</Copyright>
     <PackageTags>RSA;Key Vault;.NET</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DebugType>embedded</DebugType>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
