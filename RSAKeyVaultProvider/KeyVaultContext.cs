@@ -2,7 +2,6 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.WebKey;
 
 namespace Microsoft.Azure.KeyVault
@@ -10,7 +9,7 @@ namespace Microsoft.Azure.KeyVault
     /// <summary>
     /// A signing context used for signing packages with Azure Key Vault Keys.
     /// </summary>
-    public struct KeyVaultContext    
+    public struct KeyVaultContext
     {
         readonly KeyVaultClient client;
 
@@ -24,7 +23,7 @@ namespace Microsoft.Azure.KeyVault
             Key = key ?? throw new ArgumentNullException(nameof(key));
             Certificate = null;
         }
-        
+
         /// <summary>
         /// Creates a new Key Vault context.
         /// </summary>
@@ -44,7 +43,7 @@ namespace Microsoft.Azure.KeyVault
         /// Key isn't part of a certificate
         /// </summary>
         public X509Certificate2 Certificate { get; }
-        
+
         /// <summary>
         /// Identifyer of current key
         /// </summary>
@@ -58,6 +57,10 @@ namespace Microsoft.Azure.KeyVault
         internal async Task<byte[]> SignDigestAsync(byte[] digest, HashAlgorithmName hashAlgorithm)
         {
             var algorithm = SignatureAlgorithmTranslator.SignatureAlgorithmToJwsAlgId(hashAlgorithm);
+
+            if (hashAlgorithm == HashAlgorithmName.SHA1)
+                digest = Sha1Helper.CreateDigest(digest);
+
             var signature = await client.SignAsync(KeyIdentifier.Identifier, algorithm, digest).ConfigureAwait(false);
             return signature.Result;
         }
@@ -68,7 +71,7 @@ namespace Microsoft.Azure.KeyVault
             var data = await client.DecryptAsync(KeyIdentifier.Identifier, algorithm, cipherText).ConfigureAwait(false);
             return data.Result;
         }
-        
+
         /// <summary>
         /// Returns true if properly constructed. If default, then false.
         /// </summary>

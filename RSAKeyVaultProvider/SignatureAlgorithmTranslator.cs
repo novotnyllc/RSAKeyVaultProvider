@@ -7,7 +7,10 @@ namespace Microsoft.Azure.KeyVault
     {
         public static string SignatureAlgorithmToJwsAlgId(HashAlgorithmName hashAlgorithmName)
         {
-            if(hashAlgorithmName == HashAlgorithmName.SHA256)
+            if (hashAlgorithmName == HashAlgorithmName.SHA1)
+                return "RSNULL";
+
+            if (hashAlgorithmName == HashAlgorithmName.SHA256)
                 return "RS256";
 
             if (hashAlgorithmName == HashAlgorithmName.SHA384)
