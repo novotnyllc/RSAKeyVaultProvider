@@ -6,18 +6,17 @@ if([string]::IsNullOrEmpty($env:SignClientSecret)){
 	return;
 }
 
-# Setup Variables we need to pass into the sign client tool
+dotnet tool install --tool-path . SignClient
 
+# Setup Variables we need to pass into the sign client tool
 $appSettings = "$currentDirectory\SignClient.json"
 
-$appPath = "$currentDirectory\..\packages\SignClient\tools\netcoreapp2.0\SignClient.dll"
-
-$nupgks = ls $currentDirectory\..\*.nupkg | Select -ExpandProperty FullName
+$nupkgs = gci $Env:ArtifactDirectory\*.nupkg -recurse | Select -ExpandProperty FullName
 
 foreach ($nupkg in $nupgks){
 	Write-Host "Submitting $nupkg for signing"
 
-	dotnet $appPath 'sign' -c $appSettings -i $nupkg -r $env:SignClientUser -s $env:SignClientSecret -n 'RSAKeyVaultProvider' -d 'RSAKeyVaultProvider' -u 'https://github.com/onovotny/RSAKeyVaultProvider' 
+	.\SignClient 'sign' -c $appSettings -i $nupkg -r $env:SignClientUser -s $env:SignClientSecret -n 'RSAKeyVaultProvider' -d 'RSAKeyVaultProvider' -u 'https://github.com/onovotny/RSAKeyVaultProvider' 
 
 	Write-Host "Finished signing $nupkg"
 }
