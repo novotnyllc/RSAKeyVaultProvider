@@ -10,6 +10,10 @@ namespace Microsoft.Azure.KeyVault
         readonly KeyVaultContext context;
         RSA publicKey;
 
+        /// <summary>
+        /// Creates a new RSAKeyVault instance
+        /// </summary>
+        /// <param name="context">Context with parameters</param>
         public RSAKeyVault(KeyVaultContext context)
         {
             if (!context.IsValid)
@@ -21,6 +25,7 @@ namespace Microsoft.Azure.KeyVault
             LegalKeySizesValue = new[] { new KeySizes(publicKey.KeySize, publicKey.KeySize, 0) };
         }
 
+        /// <inheritdoc/>
         public override byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
         {
             // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
@@ -28,6 +33,7 @@ namespace Microsoft.Azure.KeyVault
             return SignHashAsync(hash, hashAlgorithm, padding).GetAwaiter().GetResult();
         }
 
+        /// <inheritdoc/>
         public async Task<byte[]> SignHashAsync(byte[] hash, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
         {
             CheckDisposed();
@@ -46,6 +52,7 @@ namespace Microsoft.Azure.KeyVault
             }
         }
 
+        /// <inheritdoc/>
         public override bool VerifyHash(byte[] hash, byte[] signature, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
         {
             CheckDisposed();
@@ -54,6 +61,7 @@ namespace Microsoft.Azure.KeyVault
             return publicKey.VerifyHash(hash, signature, hashAlgorithm, padding);
         }
 
+        /// <inheritdoc/>
         protected override byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm)
         {
             CheckDisposed();
@@ -64,6 +72,7 @@ namespace Microsoft.Azure.KeyVault
             }
         }
 
+        /// <inheritdoc/>
         protected override byte[] HashData(Stream data, HashAlgorithmName hashAlgorithm)
         {
             CheckDisposed();
@@ -74,6 +83,7 @@ namespace Microsoft.Azure.KeyVault
             }
         }
 
+        /// <inheritdoc/>
         public override byte[] Decrypt(byte[] data, RSAEncryptionPadding padding)
         {
             // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
@@ -81,6 +91,7 @@ namespace Microsoft.Azure.KeyVault
             return DecryptAsync(data, padding).GetAwaiter().GetResult();
         }
 
+        /// <inheritdoc/>
         public async Task<byte[]> DecryptAsync(byte[] data, RSAEncryptionPadding padding)
         {
             CheckDisposed();
@@ -95,6 +106,7 @@ namespace Microsoft.Azure.KeyVault
             }
         }
 
+        /// <inheritdoc/>
         public override byte[] Encrypt(byte[] data, RSAEncryptionPadding padding)
         {
             CheckDisposed();
@@ -102,6 +114,7 @@ namespace Microsoft.Azure.KeyVault
             return publicKey.Encrypt(data, padding);
         }
 
+        /// <inheritdoc/>
         public override RSAParameters ExportParameters(bool includePrivateParameters)
         {
             CheckDisposed();
@@ -112,6 +125,7 @@ namespace Microsoft.Azure.KeyVault
             return context.Key.ToRSAParameters();
         }
 
+        /// <inheritdoc/>
         public override void ImportParameters(RSAParameters parameters)
         {
             throw new NotSupportedException();
@@ -123,6 +137,7 @@ namespace Microsoft.Azure.KeyVault
                 throw new ObjectDisposedException($"{nameof(RSAKeyVault)} is disposed");
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
