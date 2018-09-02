@@ -10,7 +10,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9ECFD7DA-A446-4617-9E8F-B3440DA56E07}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		appveyor.yml = appveyor.yml
+		.vsts-ci.yml = .vsts-ci.yml
+		.vsts-pr.yml = .vsts-pr.yml
+		.vsts-shared.yml = .vsts-shared.yml
 		README.md = README.md
 		version.json = version.json
 	EndProjectSection
