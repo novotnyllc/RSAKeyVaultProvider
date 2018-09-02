@@ -22,7 +22,6 @@
     <Reference Include="System.Security" />
   </ItemGroup>
 
-
   <ItemGroup>
     <Content Include="private\*" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
