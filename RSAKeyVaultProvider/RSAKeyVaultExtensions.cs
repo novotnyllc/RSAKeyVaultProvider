@@ -7,6 +7,9 @@ using Microsoft.Azure.KeyVault.Models;
 // Namespace here so these show up in the main namespace
 namespace Microsoft.Azure.KeyVault
 {
+    /// <summary>
+    /// Extensions for creating RSA objects from a Key Vault client.
+    /// </summary>
     public static class RSAKeyVaultExtensions
     {
         /// <summary>
