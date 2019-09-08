@@ -8,8 +8,8 @@ be used anywhere an `AsymmetricAlgorithm` can be, including with `SignedXml` typ
 NuGet: `RSAKeyVaultProvider`<br />
 [![RSAKeyVaultProvider](https://img.shields.io/nuget/v/RSAKeyVaultProvider.svg)](https://www.nuget.org/packages/RSAKeyVaultProvider)
 
-CI feed is on MyGet:
-`https://www.myget.org/F/rsakeyvaultprovider/api/v3/index.json` <br />
+CI feed is on Azure Artifacts:
+`https://pkgs.dev.azure.com/onovotny/GitBuilds/_packaging/RSAKeyVaultProvider/nuget/v3/index.json` <br />
 ![RSAKeyVaultProvider](https://img.shields.io/myget/rsakeyvaultprovider/v/RSAKeyVaultProvider.svg)
 
 ## Setup
