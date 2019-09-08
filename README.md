@@ -10,7 +10,7 @@ NuGet: `RSAKeyVaultProvider`<br />
 
 CI feed is on Azure Artifacts:
 `https://pkgs.dev.azure.com/onovotny/GitBuilds/_packaging/RSAKeyVaultProvider/nuget/v3/index.json` <br />
-![RSAKeyVaultProvider](https://img.shields.io/myget/rsakeyvaultprovider/v/RSAKeyVaultProvider.svg)
+[![RSAKeyVaultProvider package in RSAKeyVaultProvider feed in Azure Artifacts](https://feeds.dev.azure.com/onovotny/96789f1c-e804-4671-be78-d063a4eced9b/_apis/public/Packaging/Feeds/4e903115-b002-444a-9696-85e1faf90bf8/Packages/dd0c51ea-6eeb-4872-a9dc-9083718d61d1/Badge)](https://dev.azure.com/onovotny/GitBuilds/_packaging?_a=package&feed=4e903115-b002-444a-9696-85e1faf90bf8&package=dd0c51ea-6eeb-4872-a9dc-9083718d61d1&preferRelease=true)
 
 ## Setup
 To run these tests, you'll need to import a code signing certificate into an
