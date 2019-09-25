@@ -19,7 +19,7 @@ steps:
     version: 3.0.x    
 
 - task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 2.1.x'
+  displayName: 'Use .NET Core runtime 2.1.x'
   inputs:
     version: 2.1.x
     packageType: runtime
