@@ -11,6 +11,7 @@ namespace RSAKeyVaultProviderTests
     {
         private readonly AzureKeyVaultSignConfigurationSet certificateConfiguration;
         private readonly AzureKeyVaultSignConfigurationSet keyConfiguration;
+        private readonly AzureKeyVaultSignConfigurationSet certificateWithMSIConfiguration;
 
         public RSAKeyVaultProviderTests()
         {
@@ -38,12 +39,37 @@ namespace RSAKeyVaultProviderTests
                 AzureKeyVaultKeyName = creds.AzureKeyVaultKeyName,
                 Mode = KeyVaultMode.Key
             };
+
+            certificateWithMSIConfiguration = new AzureKeyVaultSignConfigurationSet
+            {
+                ManagedIdentity = true,
+                AzureKeyVaultUrl = new Uri(creds.AzureKeyVaultUrl),
+                AzureKeyVaultKeyName = creds.AzureKeyVaultCertificateName,
+                Mode = KeyVaultMode.Certificate
+            };
         }
 
         [AzureFact]
         public async Task ShouldRoundTripASignatureWithCertificate()
         {
             var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+
+            using (var rsa = materialized.ToRSA())
+            using (var sha256 = SHA256.Create())
+            {
+                var data = new byte[] { 1, 2, 3 };
+                var digest = sha256.ComputeHash(data);
+                var signature = rsa.SignHash(digest, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                var result = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                Assert.True(result);
+            }
+        }
+
+
+        [AzureFact]
+        public async Task ShouldRoundTripASignatureWithCertificateViaMsi()
+        {
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateWithMSIConfiguration);
 
             using (var rsa = materialized.ToRSA())
             using (var sha256 = SHA256.Create())
