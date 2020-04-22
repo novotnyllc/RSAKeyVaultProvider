@@ -27,11 +27,8 @@ namespace RSAKeyVaultProviderTests
                 var certificateClient = new CertificateClient(configuration.AzureKeyVaultUrl, credential);
                 var cert = await certificateClient.GetCertificateAsync(configuration.AzureKeyVaultKeyName).ConfigureAwait(false);
                 
-                var x509Certificate = new X509Certificate2(cert.Value.Cer);               
-                
+                var x509Certificate = new X509Certificate2(cert.Value.Cer);                               
                 var keyId = cert.Value.KeyId;
-
-                var keyResolver = new KeyResolver(credential);
                 
                 return new AzureKeyVaultMaterializedConfiguration(credential, keyId, publicCertificate: x509Certificate);
             }
