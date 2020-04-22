@@ -1,65 +1,61 @@
-﻿using Microsoft.Azure.KeyVault;
+﻿using Azure.Core;
+using Azure.Identity;
+using Azure.Security.KeyVault.Certificates;
+using Azure.Security.KeyVault.Keys;
+using Azure.Security.KeyVault.Keys.Cryptography;
+
+using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System;
-using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Microsoft.Azure.KeyVault.WebKey;
-using System.Security.Cryptography;
 
 namespace RSAKeyVaultProviderTests
 {
     internal static class KeyVaultConfigurationDiscoverer
     {
         public static async Task<AzureKeyVaultMaterializedConfiguration> Materialize(AzureKeyVaultSignConfigurationSet configuration)
-        {
-            async Task<string> Authenticate(string authority, string resource, string scope)
+        {   
+            TokenCredential credential = configuration.ManagedIdentity switch
             {
-                if (!string.IsNullOrWhiteSpace(configuration.AzureAccessToken))
-                {
-                    return configuration.AzureAccessToken;
-                }
+                true => new DefaultAzureCredential(),
+                false => new ClientSecretCredential(configuration.AzureTenantId, configuration.AzureClientId, configuration.AzureClientSecret)
+            };
 
-                var context = new AuthenticationContext(authority);
-                var credential = new ClientCredential(configuration.AzureClientId, configuration.AzureClientSecret);
-
-                var result = await context.AcquireTokenAsync(resource, credential).ConfigureAwait(false);
-                if (result == null)
-                {
-                    throw new InvalidOperationException("Authentication to Azure failed.");
-                }
-                return result.AccessToken;
-            }
-
-            var vault = new KeyVaultClient(Authenticate);
             if (configuration.Mode == KeyVaultMode.Certificate)
             {
-                var azureCertificate = await vault.GetCertificateAsync(configuration.AzureKeyVaultUrl, configuration.AzureKeyVaultKeyName).ConfigureAwait(false);
-                var x509Certificate = new X509Certificate2(azureCertificate.Cer);
-                var keyId = azureCertificate.KeyIdentifier;
+                var certificateClient = new CertificateClient(configuration.AzureKeyVaultUrl, credential);
+                var cert = await certificateClient.GetCertificateAsync(configuration.AzureKeyVaultKeyName).ConfigureAwait(false);
                 
-                return new AzureKeyVaultMaterializedConfiguration(vault, keyId, publicCertificate: x509Certificate);
+                var x509Certificate = new X509Certificate2(cert.Value.Cer);               
+                
+                var keyId = cert.Value.KeyId;
+
+                var keyResolver = new KeyResolver(credential);
+                
+                return new AzureKeyVaultMaterializedConfiguration(credential, keyId, publicCertificate: x509Certificate);
             }
             else if(configuration.Mode == KeyVaultMode.Key)
             {
-                var bundle = await vault.GetKeyAsync(configuration.AzureKeyVaultUrl, configuration.AzureKeyVaultKeyName).ConfigureAwait(false);
-                return new AzureKeyVaultMaterializedConfiguration(vault, bundle.KeyIdentifier, bundle.Key);
+                var keyClient = new KeyClient(configuration.AzureKeyVaultUrl, credential);
+                var key = await keyClient.GetKeyAsync(configuration.AzureKeyVaultKeyName).ConfigureAwait(false);
+                return new AzureKeyVaultMaterializedConfiguration(credential, key.Value.Id, key.Value.Key);
             }
             throw new ArgumentOutOfRangeException(nameof(configuration));
         }
     }
 
-    public class AzureKeyVaultMaterializedConfiguration : IDisposable
+    public class AzureKeyVaultMaterializedConfiguration 
     {
-        public AzureKeyVaultMaterializedConfiguration(KeyVaultClient client, 
-                                                      KeyIdentifier keyIdentifier, 
+        public AzureKeyVaultMaterializedConfiguration(TokenCredential credential, 
+                                                      Uri keyIdentifier, 
                                                       JsonWebKey key = null,
                                                       X509Certificate2 publicCertificate = null)
         {
             
             
             PublicCertificate = publicCertificate;
-            Client = client ?? throw new ArgumentNullException(nameof(client));
+            TokenCredential = credential ?? throw new ArgumentNullException(nameof(credential));
             KeyIdentifier = keyIdentifier ?? throw new ArgumentNullException(nameof(keyIdentifier));
             if(publicCertificate == null && key == null)
                 throw new ArgumentNullException(nameof(key), "Either key or publicCertificate must be set");
@@ -71,23 +67,24 @@ namespace RSAKeyVaultProviderTests
         /// Can be null if Key isn't part of an x509 certificate
         /// </summary>
         public X509Certificate2 PublicCertificate { get; }
-        public KeyVaultClient Client { get; }
-        public KeyIdentifier KeyIdentifier { get; }
+
+        public TokenCredential TokenCredential { get; }
+
+        public Uri KeyIdentifier { get; }
         /// <summary>
         /// Only contains the public key
         /// </summary>
         public JsonWebKey Key { get; }
-
-        public void Dispose()
-        {
-            Client.Dispose();
-        }
+       
 
         public RSAKeyVault ToRSA()
         {
             if (PublicCertificate != null)
-                return (RSAKeyVault)Client.ToRSA(KeyIdentifier, PublicCertificate);
-            return (RSAKeyVault)Client.ToRSA(KeyIdentifier, Key);
+            {
+                return (RSAKeyVault)RsaFactory.Create(TokenCredential, KeyIdentifier, PublicCertificate);
+            }
+
+            return (RSAKeyVault)RsaFactory.Create(TokenCredential, KeyIdentifier, Key);
         }
     }
 }

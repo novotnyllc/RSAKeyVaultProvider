@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using Microsoft.Azure.KeyVault.WebKey;
+
+using Azure.Security.KeyVault.Keys;
+using Azure.Security.KeyVault.Keys.Cryptography;
+using Azure.Core;
 
 namespace Microsoft.Azure.KeyVault
 {
@@ -11,30 +13,39 @@ namespace Microsoft.Azure.KeyVault
     /// </summary>
     public struct KeyVaultContext
     {
-        readonly KeyVaultClient client;
+        readonly CryptographyClient cryptographyClient;
 
         /// <summary>
         /// Creates a new Key Vault context.
         /// </summary>
-        public KeyVaultContext(KeyVaultClient client, KeyIdentifier keyIdentifier, JsonWebKey key)
-        {
-            this.client = client ?? throw new ArgumentNullException(nameof(client));
-            KeyIdentifier = keyIdentifier ?? throw new ArgumentNullException(nameof(keyIdentifier));
+        public KeyVaultContext(TokenCredential credential, Uri keyId, JsonWebKey key)
+        {            
+            KeyIdentifier = keyId ?? throw new ArgumentNullException(nameof(keyId));
             Key = key ?? throw new ArgumentNullException(nameof(key));
-            Certificate = null;
+
+
+            this.cryptographyClient = new CryptographyClient(keyId, credential);
+            Certificate = null;            
         }
 
         /// <summary>
         /// Creates a new Key Vault context.
         /// </summary>
-        public KeyVaultContext(KeyVaultClient client, KeyIdentifier keyIdentifier, X509Certificate2 publicCertificate)
+        public KeyVaultContext(TokenCredential credential, Uri keyId, X509Certificate2 publicCertificate)
         {
+            if (credential is null)
+            {
+                throw new ArgumentNullException(nameof(credential));
+            }
+
             Certificate = publicCertificate ?? throw new ArgumentNullException(nameof(publicCertificate));
-            this.client = client ?? throw new ArgumentNullException(nameof(client));
-            KeyIdentifier = keyIdentifier ?? throw new ArgumentNullException(nameof(keyIdentifier));
+            KeyIdentifier = keyId ?? throw new ArgumentNullException(nameof(keyId));
+
+            this.cryptographyClient = new KeyResolver(credential).Resolve(keyId);
+
             using (var rsa = publicCertificate.GetRSAPublicKey())
             {
-                Key = new JsonWebKey(rsa.ExportParameters(false));
+                Key = new JsonWebKey(rsa, includePrivateParameters: false);
             }
         }
 
@@ -47,34 +58,36 @@ namespace Microsoft.Azure.KeyVault
         /// <summary>
         /// Identifyer of current key
         /// </summary>
-        public KeyIdentifier KeyIdentifier { get; }
+        public Uri KeyIdentifier { get; }
 
         /// <summary>
         /// Public key 
         /// </summary>
         public JsonWebKey Key { get; }
 
-        internal async Task<byte[]> SignDigestAsync(byte[] digest, HashAlgorithmName hashAlgorithm)
+        internal byte[] SignDigest(byte[] digest, HashAlgorithmName hashAlgorithm)
         {
             var algorithm = SignatureAlgorithmTranslator.SignatureAlgorithmToJwsAlgId(hashAlgorithm);
 
             if (hashAlgorithm == HashAlgorithmName.SHA1)
                 digest = Sha1Helper.CreateDigest(digest);
 
-            var signature = await client.SignAsync(KeyIdentifier.Identifier, algorithm, digest).ConfigureAwait(false);
-            return signature.Result;
+            var sigResult = cryptographyClient.Sign(algorithm, digest);
+
+            return sigResult.Signature;
         }
 
-        internal async Task<byte[]> DecryptDataAsync(byte[] cipherText, RSAEncryptionPadding padding)
+        internal byte[] DecryptData(byte[] cipherText, RSAEncryptionPadding padding)
         {
             var algorithm = EncryptionPaddingTranslator.EncryptionPaddingToJwsAlgId(padding);
-            var data = await client.DecryptAsync(KeyIdentifier.Identifier, algorithm, cipherText).ConfigureAwait(false);
-            return data.Result;
+
+            var dataResult = cryptographyClient.Decrypt(algorithm, cipherText);
+            return dataResult.Plaintext;
         }
 
         /// <summary>
         /// Returns true if properly constructed. If default, then false.
         /// </summary>
-        public bool IsValid => client != null;
+        public bool IsValid => cryptographyClient != null;
     }
 }

@@ -23,7 +23,8 @@ namespace RSAKeyVaultProviderTests
             {
                 AzureClientId = creds.ClientId,
                 AzureClientSecret = creds.ClientSecret,
-                AzureKeyVaultUrl = creds.AzureKeyVaultUrl,
+                AzureTenantId = creds.TenantId,
+                AzureKeyVaultUrl = new Uri(creds.AzureKeyVaultUrl),
                 AzureKeyVaultKeyName = creds.AzureKeyVaultCertificateName,
                 Mode = KeyVaultMode.Certificate
             };
@@ -32,7 +33,8 @@ namespace RSAKeyVaultProviderTests
             {
                 AzureClientId = creds.ClientId,
                 AzureClientSecret = creds.ClientSecret,
-                AzureKeyVaultUrl = creds.AzureKeyVaultUrl,
+                AzureTenantId = creds.TenantId,
+                AzureKeyVaultUrl = new Uri(creds.AzureKeyVaultUrl),
                 AzureKeyVaultKeyName = creds.AzureKeyVaultKeyName,
                 Mode = KeyVaultMode.Key
             };
@@ -41,26 +43,24 @@ namespace RSAKeyVaultProviderTests
         [AzureFact]
         public async Task ShouldRoundTripASignatureWithCertificate()
         {
-            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration))
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+            
+            using (var rsa = materialized.ToRSA())
+            using (var sha256 = SHA256.Create())
             {
-                using (var rsa = materialized.ToRSA())
-                using (var sha256 = SHA256.Create())
-                {
-                    var data = new byte[] { 1, 2, 3 };
-                    var digest = sha256.ComputeHash(data);
-                    var signature = rsa.SignHash(digest, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                    var result = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                    Assert.True(result);
-                }                
-            }
+                var data = new byte[] { 1, 2, 3 };
+                var digest = sha256.ComputeHash(data);
+                var signature = rsa.SignHash(digest, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                var result = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                Assert.True(result);
+            }                           
         }
 
         [AzureFact]
         public async Task ShouldFailToVerifyBadSignatureWithCertificate()
         {
-            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration))
-            {
-                using (var rsa = materialized.ToRSA())
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+            using (var rsa = materialized.ToRSA())
                 using (var sha256 = SHA256.Create())
                 {
                     var data = new byte[] { 1, 2, 3 };
@@ -71,15 +71,14 @@ namespace RSAKeyVaultProviderTests
                     Assert.False(result);
                 }
                 
-            }
+            
         }
 
         [AzureFact]
         public async Task ShouldHashDataAndVerifyWithCertificate()
         {
-            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration))
-            {
-                using (var rsa = materialized.ToRSA())
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+            using (var rsa = materialized.ToRSA())
                 {
                     var data = new byte[] { 1, 2, 3 };
                 
@@ -87,15 +86,14 @@ namespace RSAKeyVaultProviderTests
                     var result = rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     Assert.True(result);
                 }   
-            }
+            
         }
 
         [AzureFact]
         public async Task ShouldRoundTripEncryptAndDecrypt()
         {
-            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration))
-            {
-                using (var rsa = materialized.ToRSA())
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+            using (var rsa = materialized.ToRSA())
                 {
                     var data = Encoding.UTF8.GetBytes("Clear text");
                     var cipherText = rsa.Encrypt(data, RSAEncryptionPadding.Pkcs1);
@@ -104,15 +102,14 @@ namespace RSAKeyVaultProviderTests
 
                     Assert.Equal("Clear text", text);
                 }
-            }
+            
         }
 
         [AzureFact]
         public async Task ShouldRoundTripASignatureWithKey()
         {
-            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration))
-            {
-                using (var rsa = materialized.ToRSA())
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+            using (var rsa = materialized.ToRSA())
                 using (var sha256 = SHA256.Create())
                 {
                     var data = new byte[] { 1, 2, 3 };
@@ -121,15 +118,14 @@ namespace RSAKeyVaultProviderTests
                     var result = rsa.VerifyHash(digest, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     Assert.True(result);
                 }
-            }
+            
         }
 
         [AzureFact]
         public async Task ShouldFailToVerifyBadSignatureWithKey()
         {
-            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration))
-            {
-                using (var rsa = materialized.ToRSA())
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+            using (var rsa = materialized.ToRSA())
                 using (var sha256 = SHA256.Create())
                 {
                     var data = new byte[] { 1, 2, 3 };
@@ -140,15 +136,14 @@ namespace RSAKeyVaultProviderTests
                     Assert.False(result);
                 }
 
-            }
+            
         }
 
         [AzureFact]
         public async Task ShouldHashDataAndVerifyWithKey()
         {
-            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration))
-            {
-                using (var rsa = materialized.ToRSA())
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+            using (var rsa = materialized.ToRSA())
                 {
                     var data = new byte[] {1, 2, 3};
 
@@ -156,30 +151,28 @@ namespace RSAKeyVaultProviderTests
                     var result = rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                     Assert.True(result);
                 }
-            }
+            
         }
 
         [AzureFact]
         public async Task SignDataShouldThrowForUnsupportedHashAlgorithm()
         {
-            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration))
-            {
-                using (var rsa = materialized.ToRSA())
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+            using (var rsa = materialized.ToRSA())
                 {
                     var exception = Assert.Throws<NotSupportedException>(() =>
                         rsa.SignData(Array.Empty<byte>(), new HashAlgorithmName("unsupported"), RSASignaturePadding.Pkcs1));
 
                     Assert.Equal("The specified algorithm is not supported.", exception.Message);
                 }
-            }
+            
         }
 
         [AzureFact]
         public async Task VerifyDataShouldThrowForUnsupportedHashAlgorithm()
         {
-            using (var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration))
-            {
-                using (var rsa = materialized.ToRSA())
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+            using (var rsa = materialized.ToRSA())
                 {
                     var exception = Assert.Throws<NotSupportedException>(() =>
                         rsa.VerifyData(Array.Empty<byte>(), Array.Empty<byte>(),
@@ -187,7 +180,7 @@ namespace RSAKeyVaultProviderTests
 
                     Assert.Equal("The specified algorithm is not supported.", exception.Message);
                 }
-            }
+            
         }
 
         [Fact]

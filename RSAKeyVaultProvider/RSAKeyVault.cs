@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace Microsoft.Azure.KeyVault
 {
@@ -31,14 +30,6 @@ namespace Microsoft.Azure.KeyVault
         /// <inheritdoc/>
         public override byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
         {
-            // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
-            // See https://msdn.microsoft.com/en-us/magazine/mt238404.aspx ("The Blocking Hack")
-            return SignHashAsync(hash, hashAlgorithm, padding).GetAwaiter().GetResult();
-        }
-
-        /// <inheritdoc/>
-        public async Task<byte[]> SignHashAsync(byte[] hash, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
-        {
             CheckDisposed();
 
             // Key Vault only supports PKCSv1 padding
@@ -47,7 +38,7 @@ namespace Microsoft.Azure.KeyVault
 
             try
             {
-                return await context.SignDigestAsync(hash, hashAlgorithm).ConfigureAwait(false);
+                return context.SignDigest(hash, hashAlgorithm);
             }
             catch (Exception e)
             {
@@ -89,25 +80,17 @@ namespace Microsoft.Azure.KeyVault
         /// <inheritdoc/>
         public override byte[] Decrypt(byte[] data, RSAEncryptionPadding padding)
         {
-            // Key Vault's API is known to use CA(false) everywhere. This should not deadlock.
-            // See https://msdn.microsoft.com/en-us/magazine/mt238404.aspx ("The Blocking Hack")
-            return DecryptAsync(data, padding).GetAwaiter().GetResult();
-        }
-
-        /// <inheritdoc/>
-        public async Task<byte[]> DecryptAsync(byte[] data, RSAEncryptionPadding padding)
-        {
             CheckDisposed();
 
             try
             {
-                return await context.DecryptDataAsync(data, padding).ConfigureAwait(false);
+                return context.DecryptData(data, padding);
             }
             catch (Exception e)
             {
                 throw new CryptographicException("Error calling Key Vault", e);
             }
-        }
+        }      
 
         /// <inheritdoc/>
         public override byte[] Encrypt(byte[] data, RSAEncryptionPadding padding)
@@ -125,7 +108,8 @@ namespace Microsoft.Azure.KeyVault
             if (includePrivateParameters)
                 throw new CryptographicException("Private keys cannot be exported by this provider");
 
-            return context.Key.ToRSAParameters();
+
+            return publicKey.ExportParameters(includePrivateParameters);
         }
 
         /// <inheritdoc/>

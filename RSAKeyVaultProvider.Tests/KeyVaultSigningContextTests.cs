@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Xunit;
+using System;
 
 namespace RSAKeyVaultProviderTests
 {
@@ -19,7 +20,7 @@ namespace RSAKeyVaultProviderTests
             {
                 AzureClientId = creds.ClientId,
                 AzureClientSecret = creds.ClientSecret,
-                AzureKeyVaultUrl = creds.AzureKeyVaultUrl,
+                AzureKeyVaultUrl = new Uri(creds.AzureKeyVaultUrl),
                 AzureKeyVaultKeyName = creds.AzureKeyVaultCertificateName,
                 Mode = KeyVaultMode.Certificate
             };
