@@ -24,7 +24,7 @@ namespace Microsoft.Azure.KeyVault
             Key = key ?? throw new ArgumentNullException(nameof(key));
 
 
-            this.cryptographyClient = new CryptographyClient(keyId, credential);
+            cryptographyClient = new CryptographyClient(keyId, credential);
             Certificate = null;            
         }
 
@@ -41,7 +41,7 @@ namespace Microsoft.Azure.KeyVault
             Certificate = publicCertificate ?? throw new ArgumentNullException(nameof(publicCertificate));
             KeyIdentifier = keyId ?? throw new ArgumentNullException(nameof(keyId));
 
-            this.cryptographyClient = new KeyResolver(credential).Resolve(keyId);
+            cryptographyClient = new CryptographyClient(keyId, credential);
 
             using (var rsa = publicCertificate.GetRSAPublicKey())
             {
