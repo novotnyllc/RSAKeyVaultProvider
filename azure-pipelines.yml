@@ -31,7 +31,9 @@ steps:
   displayName: Install NBGV tool
 
 - script: nbgv cloud
-  displayName: Set Versionstages:
+  displayName: Set Version
+
+stages:
 - stage: Build
   jobs:
   - job: Build
