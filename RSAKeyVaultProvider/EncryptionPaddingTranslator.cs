@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 using Azure.Security.KeyVault.Keys.Cryptography;
 
-namespace Microsoft.Azure.KeyVault
+namespace RSAKeyVaultProvider
 {
     static class EncryptionPaddingTranslator
     {

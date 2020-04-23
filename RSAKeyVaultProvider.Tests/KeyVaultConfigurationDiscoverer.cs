@@ -2,10 +2,8 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
 using Azure.Security.KeyVault.Keys;
-using Azure.Security.KeyVault.Keys.Cryptography;
 
-using Microsoft.Azure.KeyVault;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using RSAKeyVaultProvider;
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -78,10 +76,10 @@ namespace RSAKeyVaultProviderTests
         {
             if (PublicCertificate != null)
             {
-                return (RSAKeyVault)RsaFactory.Create(TokenCredential, KeyIdentifier, PublicCertificate);
+                return (RSAKeyVault)RSAFactory.Create(TokenCredential, KeyIdentifier, PublicCertificate);
             }
 
-            return (RSAKeyVault)RsaFactory.Create(TokenCredential, KeyIdentifier, Key);
+            return (RSAKeyVault)RSAFactory.Create(TokenCredential, KeyIdentifier, Key);
         }
     }
 }

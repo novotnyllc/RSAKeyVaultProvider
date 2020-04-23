@@ -5,13 +5,12 @@ using System.Security.Cryptography.X509Certificates;
 using Azure.Core;
 using Azure.Security.KeyVault.Keys;
 
-// Namespace here so these show up in the main namespace
-namespace Microsoft.Azure.KeyVault
+namespace RSAKeyVaultProvider
 {
     /// <summary>
     /// Extensions for creating RSA objects from a Key Vault client.
     /// </summary>
-    public static class RsaFactory
+    public static class RSAFactory
     {
         /// <summary>
         /// Creates an RSA object

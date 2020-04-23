@@ -6,7 +6,7 @@ using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Keys.Cryptography;
 using Azure.Core;
 
-namespace Microsoft.Azure.KeyVault
+namespace RSAKeyVaultProvider
 {
     /// <summary>
     /// A signing context used for signing packages with Azure Key Vault Keys.

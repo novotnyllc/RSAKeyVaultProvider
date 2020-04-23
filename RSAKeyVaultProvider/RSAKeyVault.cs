@@ -2,7 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 
-namespace Microsoft.Azure.KeyVault
+namespace RSAKeyVaultProvider
 {
     /// <summary>
     /// RSA implementation that uses Azure Key Vault

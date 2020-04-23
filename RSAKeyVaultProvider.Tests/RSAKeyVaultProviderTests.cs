@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
 using Xunit;
-using Microsoft.Azure.KeyVault;
+using RSAKeyVaultProvider;
 
 namespace RSAKeyVaultProviderTests
 {
