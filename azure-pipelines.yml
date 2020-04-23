@@ -10,29 +10,6 @@ variables:
   BuildConfiguration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
-steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 3.1.x'
-  inputs:
-    version: 3.1.x    
-
-- task: UseDotNet@2
-  displayName: 'Use .NET Core runtime 2.1.x'
-  inputs:
-    version: 2.1.x
-    packageType: runtime
-
-
-- task: DotNetCoreCLI@2  
-  inputs:
-    command: custom
-    custom: tool
-    arguments: install --tool-path . nbgv
-  displayName: Install NBGV tool
-
-- script: nbgv cloud
-  displayName: Set Version
-
 stages:
 - stage: Build
   jobs:
