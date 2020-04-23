@@ -1,34 +1,34 @@
 ﻿using System;
-using Microsoft.Azure.KeyVault.WebKey;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Azure.KeyVault.Models;
 
-// Namespace here so these show up in the main namespace
-namespace Microsoft.Azure.KeyVault
+using Azure.Core;
+using Azure.Security.KeyVault.Keys;
+
+namespace RSAKeyVaultProvider
 {
     /// <summary>
     /// Extensions for creating RSA objects from a Key Vault client.
     /// </summary>
-    public static class RSAKeyVaultExtensions
+    public static class RSAFactory
     {
         /// <summary>
         /// Creates an RSA object
         /// </summary>
-        /// <param name="client"></param>
-        /// <param name="keyIdentifier"></param>
+        /// <param name="credential"></param>
+        /// <param name="keyId"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static RSA ToRSA(this KeyVaultClient client, KeyIdentifier keyIdentifier, JsonWebKey key)
+        public static RSA Create(TokenCredential credential, Uri keyId, JsonWebKey key)
         {
-            if (client == null)
+            if (credential == null)
             {
-                throw new ArgumentNullException(nameof(client));
+                throw new ArgumentNullException(nameof(credential));
             }
 
-            if (keyIdentifier == null)
+            if (keyId == null)
             {
-                throw new ArgumentNullException(nameof(keyIdentifier));
+                throw new ArgumentNullException(nameof(keyId));
             }
 
             if (key == null)
@@ -36,26 +36,26 @@ namespace Microsoft.Azure.KeyVault
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return new RSAKeyVault(new KeyVaultContext(client, keyIdentifier, key));
+            return new RSAKeyVault(new KeyVaultContext(credential, keyId, key));
         }
 
         /// <summary>
         /// Creates an RSA object
         /// </summary>
-        /// <param name="client"></param>
-        /// <param name="keyIdentifier"></param>
+        /// <param name="credential"></param>
+        /// <param name="keyId"></param>
         /// <param name="publicCertificate"></param>
         /// <returns></returns>
-        public static RSA ToRSA(this KeyVaultClient client, KeyIdentifier keyIdentifier, X509Certificate2 publicCertificate)
+        public static RSA Create(TokenCredential credential, Uri keyId, X509Certificate2 publicCertificate)
         {
-            if (client == null)
+            if (credential == null)
             {
-                throw new ArgumentNullException(nameof(client));
+                throw new ArgumentNullException(nameof(credential));
             }
 
-            if (keyIdentifier == null)
+            if (keyId == null)
             {
-                throw new ArgumentNullException(nameof(keyIdentifier));
+                throw new ArgumentNullException(nameof(keyId));
             }
 
             if (publicCertificate == null)
@@ -63,28 +63,7 @@ namespace Microsoft.Azure.KeyVault
                 throw new ArgumentNullException(nameof(publicCertificate));
             }
 
-            return new RSAKeyVault(new KeyVaultContext(client, keyIdentifier, publicCertificate));
-        }
-
-        /// <summary>
-        /// Creates an RSA object
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="keyBundle"></param>
-        /// <returns></returns>
-        public static RSA ToRSA(this KeyVaultClient client, KeyBundle keyBundle)
-        {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            if (keyBundle == null)
-            {
-                throw new ArgumentNullException(nameof(keyBundle));
-            }
-
-            return new RSAKeyVault(new KeyVaultContext(client, keyBundle.KeyIdentifier, keyBundle.Key));
+            return new RSAKeyVault(new KeyVaultContext(credential, keyId, publicCertificate));
         }
     }
 }

@@ -44,6 +44,7 @@ namespace RSAKeyVaultProviderTests
 
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
+        public string TenantId { get; set; }
         public string AzureKeyVaultUrl { get; set; }
         public string AzureKeyVaultCertificateName { get; set; }
         public string AzureKeyVaultKeyName { get; set; }

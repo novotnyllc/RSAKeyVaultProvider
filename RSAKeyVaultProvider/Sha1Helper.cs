@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace Microsoft.Azure.KeyVault
+namespace RSAKeyVaultProvider
 {
     static class Sha1Helper
     {

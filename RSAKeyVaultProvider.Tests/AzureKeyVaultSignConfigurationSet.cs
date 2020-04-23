@@ -1,5 +1,7 @@
 ﻿
 
+using System;
+
 namespace RSAKeyVaultProviderTests
 {
     public enum KeyVaultMode
@@ -9,9 +11,11 @@ namespace RSAKeyVaultProviderTests
     }
     public sealed class AzureKeyVaultSignConfigurationSet
     {
+        public bool ManagedIdentity { get; set; }
         public string AzureClientId { get; set; }
         public string AzureClientSecret { get; set; }
-        public string AzureKeyVaultUrl { get; set; }
+        public string AzureTenantId { get; set; }
+        public Uri AzureKeyVaultUrl { get; set; }
         public string AzureKeyVaultKeyName { get; set; }
         public string AzureAccessToken { get; set; }
         public KeyVaultMode Mode { get; set; }
@@ -21,17 +25,25 @@ namespace RSAKeyVaultProviderTests
             // Logging candidate.
             if (string.IsNullOrWhiteSpace(AzureAccessToken))
             {
-                if (string.IsNullOrWhiteSpace(AzureClientId))
+                if(!ManagedIdentity)
                 {
-                    return false;
-                }
-                if (string.IsNullOrWhiteSpace(AzureClientSecret))
-                {
-                    return false;
-                }
+                    if (string.IsNullOrWhiteSpace(AzureClientId))
+                    {
+                        return false;
+                    }
+                    if (string.IsNullOrWhiteSpace(AzureClientSecret))
+                    {
+                        return false;
+                    }
+                    if(string.IsNullOrWhiteSpace(AzureTenantId))
+                    {
+                        return false;
+                    }
+
+                }                
             }
             
-            if (string.IsNullOrWhiteSpace(AzureKeyVaultUrl))
+            if (AzureKeyVaultUrl == null)
             {
                 return false;
             }
