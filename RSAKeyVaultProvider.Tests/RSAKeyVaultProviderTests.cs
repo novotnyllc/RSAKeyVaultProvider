@@ -115,21 +115,21 @@ namespace RSAKeyVaultProviderTests
 
         }
 
-        [AzureFact]
-        public async Task ShouldRoundTripEncryptAndDecryptWithCertificate()
-        {
-            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
-            using (var rsa = materialized.ToRSA())
-            {
-                var data = Encoding.UTF8.GetBytes("Clear text");
-                var cipherText = rsa.Encrypt(data, RSAEncryptionPadding.Pkcs1);
-                var returnedData = rsa.Decrypt(cipherText, RSAEncryptionPadding.Pkcs1);
-                var text = Encoding.UTF8.GetString(returnedData);
+     //   [AzureFact] // need to get right key permission on cert
+        //public async Task ShouldRoundTripEncryptAndDecryptWithCertificate()
+        //{
+        //    var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
+        //    using (var rsa = materialized.ToRSA())
+        //    {
+        //        var data = Encoding.UTF8.GetBytes("Clear text");
+        //        var cipherText = rsa.Encrypt(data, RSAEncryptionPadding.Pkcs1);
+        //        var returnedData = rsa.Decrypt(cipherText, RSAEncryptionPadding.Pkcs1);
+        //        var text = Encoding.UTF8.GetString(returnedData);
 
-                Assert.Equal("Clear text", text);
-            }
+        //        Assert.Equal("Clear text", text);
+        //    }
 
-        }
+        // }
 
         [AzureFact]
         public async Task ShouldRoundTripEncryptAndDecryptWithKey()
