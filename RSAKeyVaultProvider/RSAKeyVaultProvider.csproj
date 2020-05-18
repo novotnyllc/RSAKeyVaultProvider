@@ -4,11 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Claire Novotny</Authors>
     <Company>Claire Novotny</Company>
-    <Description>Enables Key Vault keys and certificates to be used anywhere RSA is within .NET's crypto ecosystem</Description>
+    <Description>Enables Key Vault keys and certificates to be used anywhere RSA or ECDsa is within .NET's crypto ecosystem</Description>
     <PackageLicenseUrl>https://raw.githubusercontent.com/novotnyllc/RSAKeyVaultProvider/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/novotnyllc/RSAKeyVaultProvider</PackageProjectUrl>
     <Copyright>Copyright (c) Claire Novotny</Copyright>
-    <PackageTags>RSA;Key Vault;.NET</PackageTags>
+    <PackageTags>RSA;ECDSA;Key Vault;.NET</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DebugType>embedded</DebugType>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
