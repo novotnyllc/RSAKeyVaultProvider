@@ -38,7 +38,7 @@ namespace RSAKeyVaultProvider
 
             try
             {
-                return context.SignDigest(hash, hashAlgorithm);
+                return context.SignDigest(hash, hashAlgorithm, KeyVaultSignatureAlgorithm.RSAPkcs15);
             }
             catch (Exception e)
             {
