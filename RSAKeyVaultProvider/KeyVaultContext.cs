@@ -43,9 +43,24 @@ namespace RSAKeyVaultProvider
 
             cryptographyClient = new CryptographyClient(keyId, credential);
 
-            using (var rsa = publicCertificate.GetRSAPublicKey())
+            string algorithm = publicCertificate.GetKeyAlgorithm();
+
+            switch (algorithm)
             {
-                Key = new JsonWebKey(rsa, includePrivateParameters: false);
+                case "1.2.840.113549.1.1.1": //rsa
+                    using (var rsa = publicCertificate.GetRSAPublicKey())
+                    {
+                        Key = new JsonWebKey(rsa, includePrivateParameters: false);
+                    }
+                    break;
+                case "1.2.840.10045.2.1": //ec
+                    using (var ecdsa = publicCertificate.GetECDsaPublicKey())
+                    {
+                        Key = new JsonWebKey(ecdsa, includePrivateParameters: false);
+                    }
+                    break;
+                default:
+                    throw new NotSupportedException($"Certificate algorithm '{algorithm}' is not supported.");
             }
         }
 
@@ -65,12 +80,17 @@ namespace RSAKeyVaultProvider
         /// </summary>
         public JsonWebKey Key { get; }
 
-        internal byte[] SignDigest(byte[] digest, HashAlgorithmName hashAlgorithm)
+        internal byte[] SignDigest(byte[] digest, HashAlgorithmName hashAlgorithm, KeyVaultSignatureAlgorithm signatureAlgorithm)
         {
-            var algorithm = SignatureAlgorithmTranslator.SignatureAlgorithmToJwsAlgId(hashAlgorithm);
+            var algorithm = SignatureAlgorithmTranslator.SignatureAlgorithmToJwsAlgId(signatureAlgorithm, hashAlgorithm);
 
             if (hashAlgorithm == HashAlgorithmName.SHA1)
+            {
+                if (signatureAlgorithm != KeyVaultSignatureAlgorithm.RSAPkcs15)
+                    throw new InvalidOperationException("SHA1 algorithm is not supported for this signature algorithm.");
+
                 digest = Sha1Helper.CreateDigest(digest);
+            }
 
             var sigResult = cryptographyClient.Sign(algorithm, digest);
 

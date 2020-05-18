@@ -47,6 +47,8 @@ namespace RSAKeyVaultProviderTests
         public string TenantId { get; set; }
         public string AzureKeyVaultUrl { get; set; }
         public string AzureKeyVaultCertificateName { get; set; }
+        public string AzureKeyVaultECDsaCertificateName { get; set; }
         public string AzureKeyVaultKeyName { get; set; }
+        public string AzureKeyVaultECDsaKeyName { get; set; }
     }
 }

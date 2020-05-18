@@ -70,7 +70,6 @@ namespace RSAKeyVaultProviderTests
         /// Only contains the public key
         /// </summary>
         public JsonWebKey Key { get; }
-       
 
         public RSAKeyVault ToRSA()
         {
@@ -80,6 +79,16 @@ namespace RSAKeyVaultProviderTests
             }
 
             return (RSAKeyVault)RSAFactory.Create(TokenCredential, KeyIdentifier, Key);
+        }
+
+        public ECDsaKeyVault ToECDsa()
+        {
+            if (PublicCertificate != null)
+            {
+                return (ECDsaKeyVault)ECDsaFactory.Create(TokenCredential, KeyIdentifier, PublicCertificate);
+            }
+
+            return (ECDsaKeyVault)ECDsaFactory.Create(TokenCredential, KeyIdentifier, Key);
         }
     }
 }
