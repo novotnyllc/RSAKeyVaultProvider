@@ -47,12 +47,15 @@ namespace RSAKeyVaultProvider
         public override byte[] SignHash(byte[] hash)
         {
             CheckDisposed();
+            ValidateKeyDigestCombination(KeySize, hash.Length);
 
-            if (hash.Length == 256 / 8 && KeySize == 256)
+            // We know from ValidateKeyDigestCombination that the key size and hash size are matched up
+            // according to RFC 7518 Sect. 3.1.
+            if (KeySize == 256)
                 return context.SignDigest(hash, HashAlgorithmName.SHA256, KeyVaultSignatureAlgorithm.ECDsa);
-            if (hash.Length == 384 / 8 && KeySize == 384)
+            if (KeySize == 384)
                 return context.SignDigest(hash, HashAlgorithmName.SHA384, KeyVaultSignatureAlgorithm.ECDsa);
-            if (hash.Length == 512 / 8 && KeySize == 521) //ES512 uses nistP521
+            if (KeySize == 521) //ES512 uses nistP521
                 return context.SignDigest(hash, HashAlgorithmName.SHA512, KeyVaultSignatureAlgorithm.ECDsa);
 
             throw new ArgumentException("Digest length is not valid for the key size.", nameof(hash));
@@ -60,18 +63,9 @@ namespace RSAKeyVaultProvider
 
         protected override byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm)
         {
-            IncrementalHash hash;
+            ValidateKeyDigestCombination(KeySize, hashAlgorithm);
 
-            try
-            {
-                hash = IncrementalHash.CreateHash(hashAlgorithm);
-            }
-            catch
-            {
-                throw new NotSupportedException("The specified algorithm is not supported.");
-            }
-
-            using (hash)
+            using (IncrementalHash hash = IncrementalHash.CreateHash(hashAlgorithm))
             {
                 hash.AppendData(data, offset, count);
                 return hash.GetHashAndReset();
@@ -82,6 +76,7 @@ namespace RSAKeyVaultProvider
         public override bool VerifyHash(byte[] hash, byte[] signature)
         {
             CheckDisposed();
+            ValidateKeyDigestCombination(KeySize, hash.Length);
 
             return publicKey.VerifyHash(hash, signature);
         }
@@ -129,5 +124,36 @@ namespace RSAKeyVaultProvider
         /// Importing parameters from XML is not supported.
         public override void FromXmlString(string xmlString) =>
             throw new NotSupportedException();
+
+        private static void ValidateKeyDigestCombination(int keySizeBits, int digestSizeBytes)
+        {
+            if (keySizeBits == 256 && digestSizeBytes == 32 ||
+                keySizeBits == 384 && digestSizeBytes == 48 ||
+                keySizeBits == 521 && digestSizeBytes == 64)
+            {
+                return;
+            }
+
+            throw new NotSupportedException($"The key size '{keySizeBits}' is not valid for digest of size '{digestSizeBytes}' bytes.");
+        }
+
+        private static void ValidateKeyDigestCombination(int keySizeBits, HashAlgorithmName hashAlgorithmName)
+        {
+            if (hashAlgorithmName != HashAlgorithmName.SHA256 &&
+                hashAlgorithmName != HashAlgorithmName.SHA384 &&
+                hashAlgorithmName != HashAlgorithmName.SHA512)
+            {
+                throw new NotSupportedException("The specified algorithm is not supported.");
+            }
+
+            if (keySizeBits == 256 && hashAlgorithmName == HashAlgorithmName.SHA256 ||
+                keySizeBits == 384 && hashAlgorithmName == HashAlgorithmName.SHA384 ||
+                keySizeBits == 521 && hashAlgorithmName == HashAlgorithmName.SHA512)
+            {
+                return;
+            }
+
+            throw new NotSupportedException($"The key size '{keySizeBits}' is not valid for digest algorithm '{hashAlgorithmName}'.");
+        }
     }
 }

@@ -171,6 +171,36 @@ namespace RSAKeyVaultProviderTests
         }
 
         [AzureFact]
+        public async Task SignHashShouldThrowForDigestAndKeySizeMismatch()
+        {
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration);
+            using (var ecdsa = materialized.ToECDsa())
+            using (var sha384 = SHA384.Create())
+            {
+                Assert.Equal(256, ecdsa.KeySize);
+
+                var data = new byte[] { 1, 2, 3 };
+                var digest = sha384.ComputeHash(data);
+                var ex = Assert.Throws<NotSupportedException>(() => ecdsa.SignHash(digest));
+                Assert.Equal("The key size '256' is not valid for digest of size '48' bytes.", ex.Message);
+            }
+        }
+
+        [AzureFact]
+        public async Task SignDataShouldThrowForDigestAndKeySizeMismatch()
+        {
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration);
+            using (var ecdsa = materialized.ToECDsa())
+            {
+                Assert.Equal(256, ecdsa.KeySize);
+
+                var data = new byte[] { 1, 2, 3 };
+                var ex = Assert.Throws<NotSupportedException>(() => ecdsa.SignData(data, HashAlgorithmName.SHA384));
+                Assert.Equal("The key size '256' is not valid for digest algorithm 'SHA384'.", ex.Message);
+            }
+        }
+
+        [AzureFact]
         public async Task VerifyDataShouldThrowForUnsupportedHashAlgorithm()
         {
             var materialized = await KeyVaultConfigurationDiscoverer.Materialize(certificateConfiguration);
