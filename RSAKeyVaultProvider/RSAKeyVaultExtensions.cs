@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 
 using Azure.Core;
 using Azure.Security.KeyVault.Keys;
+using Azure.Security.KeyVault.Keys.Cryptography;
 
 namespace RSAKeyVaultProvider
 {
@@ -19,7 +20,7 @@ namespace RSAKeyVaultProvider
         /// <param name="keyId"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static RSA Create(TokenCredential credential, Uri keyId, JsonWebKey key)
+        public static RSA Create(TokenCredential credential, Uri keyId, JsonWebKey key, CryptographyClientOptions options = null)
         {
             if (credential == null)
             {
@@ -36,7 +37,7 @@ namespace RSAKeyVaultProvider
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return new RSAKeyVault(new KeyVaultContext(credential, keyId, key));
+            return new RSAKeyVault(new KeyVaultContext(credential, keyId, key, options));
         }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace RSAKeyVaultProvider
         /// <param name="keyId"></param>
         /// <param name="publicCertificate"></param>
         /// <returns></returns>
-        public static RSA Create(TokenCredential credential, Uri keyId, X509Certificate2 publicCertificate)
+        public static RSA Create(TokenCredential credential, Uri keyId, X509Certificate2 publicCertificate, CryptographyClientOptions options = null)
         {
             if (credential == null)
             {
@@ -63,7 +64,7 @@ namespace RSAKeyVaultProvider
                 throw new ArgumentNullException(nameof(publicCertificate));
             }
 
-            return new RSAKeyVault(new KeyVaultContext(credential, keyId, publicCertificate));
+            return new RSAKeyVault(new KeyVaultContext(credential, keyId, publicCertificate, options));
         }
     }
 }
