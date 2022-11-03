@@ -4,6 +4,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Xunit;
 using RSAKeyVaultProvider;
+using Azure.Security.KeyVault.Keys.Cryptography;
+using Azure.Core.Pipeline;
 
 namespace RSAKeyVaultProviderTests
 {
@@ -185,6 +187,25 @@ namespace RSAKeyVaultProviderTests
         public async Task ShouldHashDataAndVerifyWithKey()
         {
             var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration);
+            using (var rsa = materialized.ToRSA())
+            {
+                var data = new byte[] { 1, 2, 3 };
+
+                var signature = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                var result = rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                Assert.True(result);
+            }
+
+        }
+
+        [AzureFact]
+        public async Task ShouldHashDataAndVerifyWorkWithCustomCryptographyClientOptions()
+        {
+            var cryptographyClientOptions = new CryptographyClientOptions
+            {
+                Transport = new HttpClientTransport()
+            };
+            var materialized = await KeyVaultConfigurationDiscoverer.Materialize(keyConfiguration, cryptographyClientOptions);
             using (var rsa = materialized.ToRSA())
             {
                 var data = new byte[] { 1, 2, 3 };

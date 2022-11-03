@@ -18,20 +18,20 @@ namespace RSAKeyVaultProvider
         /// <summary>
         /// Creates a new Key Vault context.
         /// </summary>
-        public KeyVaultContext(TokenCredential credential, Uri keyId, JsonWebKey key)
+        public KeyVaultContext(TokenCredential credential, Uri keyId, JsonWebKey key, CryptographyClientOptions options = null)
         {            
             KeyIdentifier = keyId ?? throw new ArgumentNullException(nameof(keyId));
             Key = key ?? throw new ArgumentNullException(nameof(key));
 
 
-            cryptographyClient = new CryptographyClient(keyId, credential);
+            cryptographyClient = new CryptographyClient(keyId, credential, options);
             Certificate = null;            
         }
 
         /// <summary>
         /// Creates a new Key Vault context.
         /// </summary>
-        public KeyVaultContext(TokenCredential credential, Uri keyId, X509Certificate2 publicCertificate)
+        public KeyVaultContext(TokenCredential credential, Uri keyId, X509Certificate2 publicCertificate, CryptographyClientOptions options = null)
         {
             if (credential is null)
             {
@@ -41,7 +41,7 @@ namespace RSAKeyVaultProvider
             Certificate = publicCertificate ?? throw new ArgumentNullException(nameof(publicCertificate));
             KeyIdentifier = keyId ?? throw new ArgumentNullException(nameof(keyId));
 
-            cryptographyClient = new CryptographyClient(keyId, credential);
+            cryptographyClient = new CryptographyClient(keyId, credential, options);
 
             string algorithm = publicCertificate.GetKeyAlgorithm();
 

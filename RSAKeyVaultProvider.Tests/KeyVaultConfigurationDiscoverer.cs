@@ -2,7 +2,7 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Certificates;
 using Azure.Security.KeyVault.Keys;
-
+using Azure.Security.KeyVault.Keys.Cryptography;
 using RSAKeyVaultProvider;
 using System;
 using System.Security.Cryptography.X509Certificates;
@@ -12,7 +12,7 @@ namespace RSAKeyVaultProviderTests
 {
     internal static class KeyVaultConfigurationDiscoverer
     {
-        public static async Task<AzureKeyVaultMaterializedConfiguration> Materialize(AzureKeyVaultSignConfigurationSet configuration)
+        public static async Task<AzureKeyVaultMaterializedConfiguration> Materialize(AzureKeyVaultSignConfigurationSet configuration, CryptographyClientOptions options = null)
         {   
             TokenCredential credential = configuration.ManagedIdentity switch
             {
@@ -28,13 +28,13 @@ namespace RSAKeyVaultProviderTests
                 var x509Certificate = new X509Certificate2(cert.Value.Cer);                               
                 var keyId = cert.Value.KeyId;
                 
-                return new AzureKeyVaultMaterializedConfiguration(credential, keyId, publicCertificate: x509Certificate);
+                return new AzureKeyVaultMaterializedConfiguration(credential, keyId, publicCertificate: x509Certificate, options: options);
             }
             else if(configuration.Mode == KeyVaultMode.Key)
             {
                 var keyClient = new KeyClient(configuration.AzureKeyVaultUrl, credential);
                 var key = await keyClient.GetKeyAsync(configuration.AzureKeyVaultKeyName).ConfigureAwait(false);
-                return new AzureKeyVaultMaterializedConfiguration(credential, key.Value.Id, key.Value.Key);
+                return new AzureKeyVaultMaterializedConfiguration(credential, key.Value.Id, key.Value.Key, options: options);
             }
             throw new ArgumentOutOfRangeException(nameof(configuration));
         }
@@ -45,7 +45,8 @@ namespace RSAKeyVaultProviderTests
         public AzureKeyVaultMaterializedConfiguration(TokenCredential credential, 
                                                       Uri keyIdentifier, 
                                                       JsonWebKey key = null,
-                                                      X509Certificate2 publicCertificate = null)
+                                                      X509Certificate2 publicCertificate = null,
+                                                      CryptographyClientOptions options = null)
         {
             
             
@@ -56,8 +57,11 @@ namespace RSAKeyVaultProviderTests
                 throw new ArgumentNullException(nameof(key), "Either key or publicCertificate must be set");
 
             Key = key;
+            cryptographyClientOptions = options;
         }
-        
+
+        private readonly CryptographyClientOptions cryptographyClientOptions;
+
         /// <summary>
         /// Can be null if Key isn't part of an x509 certificate
         /// </summary>
@@ -75,20 +79,20 @@ namespace RSAKeyVaultProviderTests
         {
             if (PublicCertificate != null)
             {
-                return (RSAKeyVault)RSAFactory.Create(TokenCredential, KeyIdentifier, PublicCertificate);
+                return (RSAKeyVault)RSAFactory.Create(TokenCredential, KeyIdentifier, PublicCertificate, cryptographyClientOptions);
             }
 
-            return (RSAKeyVault)RSAFactory.Create(TokenCredential, KeyIdentifier, Key);
+            return (RSAKeyVault)RSAFactory.Create(TokenCredential, KeyIdentifier, Key, cryptographyClientOptions);
         }
 
         public ECDsaKeyVault ToECDsa()
         {
             if (PublicCertificate != null)
             {
-                return (ECDsaKeyVault)ECDsaFactory.Create(TokenCredential, KeyIdentifier, PublicCertificate);
+                return (ECDsaKeyVault)ECDsaFactory.Create(TokenCredential, KeyIdentifier, PublicCertificate, cryptographyClientOptions);
             }
 
-            return (ECDsaKeyVault)ECDsaFactory.Create(TokenCredential, KeyIdentifier, Key);
+            return (ECDsaKeyVault)ECDsaFactory.Create(TokenCredential, KeyIdentifier, Key, cryptographyClientOptions);
         }
     }
 }
